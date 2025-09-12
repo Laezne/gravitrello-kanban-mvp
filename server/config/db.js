@@ -1,0 +1,18 @@
+// Usando sequelize y variables de entorno, genero la conexión a la BD 
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: 'mysql',
+    logging: false, // Cambia a console.log para ver las queries SQL
+  }
+);
+
+export default sequelize;
