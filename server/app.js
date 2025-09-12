@@ -1,41 +1,67 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+import "dotenv/config";
+import createError from "http-errors";
+import express from "express";
+import session from "express-session";
+import connectSessionSequelize from "connect-session-sequelize";
+import path from "path";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
+import cors from "cors";
+import { fileURLToPath } from "url";
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+import sequelize from "./config/db.js";  
+import userRoutes from "./modules/users/users.routes.js";
 
-var app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+const SequelizeStore = connectSessionSequelize(session.Store);
+const app = express();
 
-app.use(logger('dev'));
+// Middlewares
+app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: false })); // ✅ antes de session
+app.use(cookieParser()); // ✅ antes de session
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// Configuración de sesión
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "supersecret",
+    store: new SequelizeStore({ db: sequelize }),
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,     // la cookie no es accesible desde JS
+      secure: false,      // true si usas HTTPS
+      sameSite: "lax",    // o "none" si usas HTTPS
+      maxAge: 1000 * 60 * 60, // 1 hora
+    },
+  })
+);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
+// Static 
+app.use(express.static(path.join(__dirname, "public")));
+
+// Rutas
+app.use("/api/users", userRoutes);
+
+// catch 404
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+app.use(function (err, req, res, next) {
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.locals.error = req.app.get("env") === "development" ? err : {};
+  res.status(err.status || 500).json(err);
 });
 
-module.exports = app;
+export default app;
