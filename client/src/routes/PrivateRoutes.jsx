@@ -1,15 +1,25 @@
-import { useContext } from "react";
-import { Navigate, Outlet } from "react-router";
+import { useContext, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router";
 import { AuthContext } from "../context/AuthContextProvider";
 
 export const PrivateRoutes = () => {
+  const navigate = useNavigate();
   const { user, loading } = useContext(AuthContext);
 
+  useEffect(() => {
+    if (!loading && !user) {
+      // Si ya cargó y no hay usuario, redirige
+      navigate("/login", { replace: true });
+    }
+  }, [loading, user, navigate]);
+
   if (loading) {
-    // Aquí podrías mostrar un spinner global mientras verificas la sesión
-    return <div>Cargando...</div>;
+    return <div>Cargando...</div>; // aquí puedes poner un Spinner
   }
 
-  // Si hay usuario, muestra las rutas privadas
-  return user ? <Outlet /> : <Navigate to="/login" replace />;
+  return (
+    <>
+      {user && <Outlet />}
+    </>
+  );
 };

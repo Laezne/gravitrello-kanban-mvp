@@ -6,5 +6,5 @@ export const PublicRoutes = () => {
   const { user } = useContext(AuthContext);
 
   // Si hay usuario -> redirige al dashboard, si no -> muestra rutas públicas
-  return user ? <Navigate to="/dashboard" replace /> : <Outlet />;
+  return user ? <Navigate to="/user/dashboard" replace /> : <Outlet />;
 };

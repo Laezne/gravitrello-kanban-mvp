@@ -8,6 +8,7 @@ import { UserLayout } from '../layouts/UserLayout'
 import { Spinner, Flex } from "@chakra-ui/react";
 
 // Importaciones "carga perezosa":
+const Home = lazy(()=>import('../pages/publicPages/Home'))
 const Register = lazy(() => import('../pages/userPages/register/Register'));
 const Login = lazy(() => import('../pages/userPages/login/Login'));
 const Dashboard = lazy(() => import('../pages/userPages/dashboard/DashBoard'));
@@ -36,7 +37,8 @@ export const AppRoutes = () => {
               {/* Rutas Públicas: */}
               <Route element={<PublicRoutes />}>
                 <Route element={<PublicLayout />}>
-                  <Route path="/" element={<Register />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/register" element={<Register />} />
                   <Route path="/login" element={<Login />} />
                 </Route>
               </Route>
@@ -44,7 +46,7 @@ export const AppRoutes = () => {
               {/* Rutas Privadas de Usuario: */}
               <Route element={<PrivateRoutes />}>
                 <Route element={<UserLayout />}>
-                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/user/dashboard" element={<Dashboard />} />
                 </Route>
               </Route>
 
