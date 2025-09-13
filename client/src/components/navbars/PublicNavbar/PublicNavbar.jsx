@@ -31,8 +31,8 @@ export default function PublicNavbar() {
   return (
     <Box>
       <Flex
-        bg="brand.blue"                // Fondo azul
-        color="white"                  // Texto claro
+        bg="brand.blue"
+        color="white"
         minH="60px"
         py={{ base: 2 }}
         px={{ base: 4 }}
@@ -52,7 +52,7 @@ export default function PublicNavbar() {
             variant="ghost"
             aria-label="Toggle Navigation"
             color="white"
-            _hover={{ bg: 'brand.purple' }}
+            _hover={{ bg: 'brand.pink' }}
           >
             {open ? <HiX size={20} /> : <HiMenu size={24} />}
           </IconButton>
@@ -79,26 +79,22 @@ export default function PublicNavbar() {
           spacing={6}
         >
           <Button
-            as="a"
             fontSize="sm"
             fontWeight={400}
             variant="link"
-            href="#"
             color="white"
-            _hover={{ color: 'brand.lightBlue' }}
+            _hover={{ fontWeight: 'bold' }}
             onClick={()=>navigate('/login')}
           >
             Accede
           </Button>
           <Button
-            as="a"
             display={{ base: 'none', md: 'inline-flex' }}
             fontSize="sm"
             fontWeight={600}
             color="white"
             bg="brand.pink"
-            href="#"
-            _hover={{ bg: 'brand.purple' }}
+            _hover={{ bg: 'brand.pink.light' }}
             onClick={()=>navigate('/register')}
           >
             Regístrate
@@ -132,7 +128,7 @@ const DesktopNav = () => {
                 color="white"
                 _hover={{
                   textDecoration: 'none',
-                  color: 'brand.lightBlue',
+                  fontWeight: 'bold',
                 }}
               >
                 {navItem.label}

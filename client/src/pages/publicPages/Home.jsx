@@ -1,5 +1,6 @@
-import { Box, Container, Flex, Button, Card, Image, Text } from "@chakra-ui/react";
+import { Box, Container, Flex, Button, Card, Image } from "@chakra-ui/react";
 import logo from '../../assets/logo_unknown_gravitrello.svg'
+import imgTasks from '../../assets/img-tasks.png'
 import { useNavigate } from "react-router";
 import { useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContextProvider";
@@ -17,8 +18,14 @@ const Home = () => {
   return (
     <Container>
       <Flex justify="center" >
-        <Box pt={20}>
+        <Box pt={12}>
           <Card.Root maxW="sm" overflow="hidden" textAlign="center" py={4}>
+            <Image
+              src={imgTasks}
+              alt=""
+              width="200px"
+              mx="auto"
+            />
             <Image
               src={logo}
               alt="Logotipo Unknown Gravitrello"
@@ -34,7 +41,7 @@ const Home = () => {
             </Card.Body>
             <Card.Footer display="flex" justifyContent="center" gap="2">
               <Button 
-                  variant="solid" 
+                  variant="brandBlue" 
                   onClick={()=>navigate('/register')}
               >Comienza creando una cuenta
               </Button>

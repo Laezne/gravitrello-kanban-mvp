@@ -1,18 +1,57 @@
-// src/theme/theme.js
-import { createSystem, defaultConfig } from "@chakra-ui/react"
+// Defino un tema personalizado para usar con Chakra// src/theme/theme.js
+import {
+  defineConfig,
+  createSystem,
+  defaultConfig,
+  defineRecipe,
+} from "@chakra-ui/react"
 
-export const system = createSystem(defaultConfig, {
-  theme: {
-    tokens: {
-      colors: {
-        brand: {
-          pink:       { value: "#f72585" },
-          purple:     { value: "#7209b7" },
-          deepPurple: { value: "#3a0ca3" },
-          blue:       { value: "#4361ee" },
-          lightBlue:  { value: "#4cc9f0" },
+const buttonRecipe = defineRecipe({
+  base: {
+    borderRadius: "md",
+    color: "white",
+    px: 4,
+    py: 2,
+  },
+  variants: {
+    variant: {
+      brandBlue: {
+        bg: "brand.blue",
+        _hover: {
+          filter: "brightness(1.1)", 
+          transform: "translateY(-2px)",
+          boxShadow: "md",
+        },
+      },
+      brandPink: {
+        bg: "brand.pink",
+        _hover: {
+          filter: "brightness(1.1)", 
+          transform: "translateY(-2px)",
+          boxShadow: "md",
         },
       },
     },
   },
+  defaultVariants: {
+    variant: "brandBlue", // opcional, para que tenga un valor por defecto
+  },
 })
+
+const config = defineConfig({
+  theme: {
+    tokens: {
+      colors: {
+        brand: {
+          pink: { value: "#f72585", light: { value: "#f984b8" } },
+          blue: { value: "#4361ee", light: { value: "#4895ef" } },
+        },
+      },
+    },
+    recipes: {
+      button: buttonRecipe,
+    },
+  },
+})
+
+export const system = createSystem(defaultConfig, config)
