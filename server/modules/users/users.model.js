@@ -13,16 +13,16 @@ const User = sequelize.define(
     user_name: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      unique: true,
+      // ❌ quitamos unique aquí → ya no es único
     },
     lastname: {
       type: DataTypes.STRING(100),
-      allowNull: true,
+      allowNull: true, // 👈 puede ser null
     },
     email: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
+      unique: true, // 👈 el único campo único
       validate: {
         isEmail: true,
       },
@@ -33,6 +33,7 @@ const User = sequelize.define(
     },
     avatar: {
       type: DataTypes.STRING(200),
+      allowNull: true,
     },
     user_is_confirmed: {
       type: DataTypes.BOOLEAN,
@@ -42,16 +43,33 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    reset_token: DataTypes.STRING,
-    reset_token_expires_at: DataTypes.DATE,
-    two_factor_code: DataTypes.STRING,
-    two_factor_expires_at: DataTypes.DATE,
-    last_login_at: DataTypes.DATE,
+    reset_token: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    reset_token_expires_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    two_factor_code: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    two_factor_expires_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    last_login_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
-    tableName: "user", // 👈 coincide con tu SQL
+    tableName: "user", // 👈 coincide con tu tabla en SQL
     timestamps: false, // porque tu tabla no tiene createdAt/updatedAt
     freezeTableName: true,
+
+    
   }
 );
 

@@ -1,23 +1,24 @@
-import axios from 'axios';
+import axios from "axios";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true,
-});
+//variables de entorno de vite
+const apiUrl = import.meta.env.VITE_SERVER_URL_API;
 
-export const fetchData = async (url, method = 'GET', data = null) => {
-  try {
-    const config = {
-      method,
-      url,
-      ...(data && { data }),
-    };
-    
-    const response = await api(config);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error;
+//función para realizar peticiones al back
+export const fetchData = async (url, method, data = null, token = null) => {
+  let headers = {};
+  if (token) {
+    headers = { Authorization: `Bearer ${token}` };
   }
-};
 
-export default api;
+  const config = {
+    method,
+    url: apiUrl + url,
+    headers,
+    data,
+    withCredentials: true, // 🔑 esto hace que el navegador mande la cookie al backend
+  };
+
+  const response = await axios(config);
+
+  return response;
+};

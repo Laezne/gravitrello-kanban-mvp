@@ -1,18 +1,24 @@
-// src/pages/userPages/register/Register.jsx
+import { useState, useContext } from "react";
 import {
-  Field,
-  Input,
+  Box,
   Button,
+  Input,
   VStack,
   Heading,
-  Box,
+  Field,
+  createToaster,
 } from "@chakra-ui/react";
-import { useState, useContext } from "react";
 import { AuthContext } from "../../../context/AuthContextProvider";
 
-export default function Register() {
-  const { registerUser } = useContext(AuthContext);
+const toaster = createToaster();
+
+const Register = () => {
+  const { register } = useContext(AuthContext);
+
+  const [user_name, setUserName] = useState("");
+  const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
@@ -20,10 +26,34 @@ export default function Register() {
     setError("");
 
     try {
-      await registerUser({ email });
-      // Aquí podrías redirigir o mostrar un toast de éxito
+      const result = await register({
+        user_name,
+        lastname: lastname || null,
+        email,
+        password,
+      });
+
+      if (result.success) {
+        toaster.create({
+          title: "Registro exitoso",
+          description: "Ya puedes iniciar sesión",
+          type: "success",
+        });
+      } else {
+        setError(result.message);
+        toaster.create({
+          title: "Error en el registro",
+          description: result.message,
+          type: "error",
+        });
+      }
     } catch (err) {
       setError("No se pudo registrar. Intenta de nuevo.");
+      toaster.create({
+        title: "Error",
+        description: "No se pudo registrar. Intenta de nuevo.",
+        type: "error",
+      });
     }
   };
 
@@ -42,19 +72,45 @@ export default function Register() {
       </Heading>
 
       <VStack as="form" spacing={4} onSubmit={handleSubmit}>
-        <Field.Root invalid={!!error}>
+        <Field.Root required>
+          <Field.Label>Nombre de usuario</Field.Label>
+          <Input
+            type="text"
+            placeholder="Tu nombre de usuario"
+            value={user_name}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+        </Field.Root>
+
+        <Field.Root>
+          <Field.Label>Apellido (opcional)</Field.Label>
+          <Input
+            type="text"
+            placeholder="Tu apellido"
+            value={lastname}
+            onChange={(e) => setLastname(e.target.value)}
+          />
+        </Field.Root>
+
+        <Field.Root invalid={!!error} required>
           <Field.Label>Email</Field.Label>
-          <Field.Input
-            as={Input}
+          <Input
             type="email"
             placeholder="tu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <Field.HelperText>
-            Te enviaremos un enlace de verificación
-          </Field.HelperText>
           {error && <Field.ErrorText>{error}</Field.ErrorText>}
+        </Field.Root>
+
+        <Field.Root invalid={!!error} required>
+          <Field.Label>Contraseña</Field.Label>
+          <Input
+            type="password"
+            placeholder="********"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </Field.Root>
 
         <Button type="submit" colorScheme="teal" width="full">
@@ -63,4 +119,6 @@ export default function Register() {
       </VStack>
     </Box>
   );
-}
+};
+
+export default Register;

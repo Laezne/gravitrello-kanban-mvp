@@ -5,16 +5,16 @@ class UserController {
   // Registro
   register = async (req, res) => {
     try {
-      const { user_name, email, password } = req.body;
+      const { user_name, lastname, email, password } = req.body;
 
       if (!user_name || !email || !password) {
         return res.status(400).json({
           success: false,
-          message: "Todos los campos son requeridos",
+          message: "Nombre de usuario, email y contraseña son requeridos",
         });
       }
 
-      // Verificar si el usuario ya existe
+      // Verificar solo si el email ya existe
       const existingUser = await userDal.getUserByEmail(email);
       if (existingUser) {
         return res.status(400).json({
@@ -23,20 +23,13 @@ class UserController {
         });
       }
 
-      const existingUsername = await userDal.getUserByUsername(user_name);
-      if (existingUsername) {
-        return res.status(400).json({
-          success: false,
-          message: "El nombre de usuario ya existe",
-        });
-      }
-
       // Hashear contraseña
       const hashedPassword = await bcrypt.hash(password, 12);
 
-      // Crear usuario
+      // Crear usuario (lastname puede ser null)
       const user = await userDal.createUser({
         user_name,
+        lastname: lastname || null,
         email,
         password: hashedPassword,
       });
@@ -63,6 +56,7 @@ class UserController {
       });
     }
   };
+
 
   // Login
   login = async (req, res) => {

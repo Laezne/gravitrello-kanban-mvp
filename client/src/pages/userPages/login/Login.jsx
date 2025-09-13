@@ -1,98 +1,93 @@
-import { useState, useContext } from 'react';
-import { Link } from 'react-router';
+import { useState, useContext } from "react";
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
   Input,
   VStack,
   Heading,
-  Alert,
-  AlertIcon,
-  Text,
-  Link as ChakraLink,
-} from '@chakra-ui/react';
-import { AuthContext } from '../../../context/AuthContextProvider';
+  Field,
+  createToaster,
+} from "@chakra-ui/react";
+import { AuthContext } from "../../../context/AuthContextProvider";
+
+const toaster = createToaster();
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    setError("");
 
-    const result = await login(formData);
-    
-    if (!result.success) {
-      setError(result.message);
+    try {
+      const result = await login({ email, password });
+
+      if (result.success) {
+        toaster.create({
+          title: "Login exitoso",
+          description: "Bienvenido de nuevo",
+          type: "success",
+        });
+      } else {
+        setError(result.message);
+        toaster.create({
+          title: "Error en el login",
+          description: result.message,
+          type: "error",
+        });
+      }
+    } catch (err) {
+      setError("No se pudo iniciar sesión. Intenta de nuevo.");
+      toaster.create({
+        title: "Error",
+        description: "No se pudo iniciar sesión. Intenta de nuevo.",
+        type: "error",
+      });
     }
-    
-    setLoading(false);
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
   return (
-    <Box maxW="md" mx="auto" p={6} bg="white" borderRadius="lg" shadow="md">
-      <VStack spacing={6}>
-        <Heading size="lg">Iniciar Sesión</Heading>
-        
-        {error && (
-          <Alert status="error">
-            <AlertIcon />
-            {error}
-          </Alert>
-        )}
+    <Box
+      maxW="md"
+      mx="auto"
+      mt={10}
+      p={6}
+      borderWidth={1}
+      borderRadius="lg"
+      boxShadow="md"
+    >
+      <Heading mb={6} textAlign="center">
+        Iniciar Sesión
+      </Heading>
 
-        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-          <VStack spacing={4}>
-            <FormControl isRequired>
-              <FormLabel>Email</FormLabel>
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </FormControl>
+      <VStack as="form" spacing={4} onSubmit={handleSubmit}>
+        <Field.Root invalid={!!error} required>
+          <Field.Label>Email</Field.Label>
+          <Input
+            type="email"
+            placeholder="tu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {error && <Field.ErrorText>{error}</Field.ErrorText>}
+        </Field.Root>
 
-            <FormControl isRequired>
-              <FormLabel>Contraseña</FormLabel>
-              <Input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </FormControl>
+        <Field.Root invalid={!!error} required>
+          <Field.Label>Contraseña</Field.Label>
+          <Input
+            type="password"
+            placeholder="********"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Field.Root>
 
-            <Button
-              type="submit"
-              colorScheme="blue"
-              width="full"
-              isLoading={loading}
-            >
-              Iniciar Sesión
-            </Button>
-          </VStack>
-        </form>
-
-        <Text>
-          ¿No tienes cuenta?{' '}
-          <ChakraLink as={Link} to="/" color="blue.500">
-            Regístrate aquí
-          </ChakraLink>
-        </Text>
+        <Button type="submit" colorScheme="teal" width="full">
+          Ingresar
+        </Button>
       </VStack>
     </Box>
   );

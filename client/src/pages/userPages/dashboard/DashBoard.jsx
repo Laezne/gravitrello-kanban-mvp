@@ -1,48 +1,35 @@
-import {
-  Box,
-  Heading,
-  VStack,
-  Text,
-  HStack,
-  Avatar,
-  Card,
-  CardBody,
-} from '@chakra-ui/react';
-import { useContext } from 'react';
-import { AuthContext } from '../../../context/AuthContextProvider';
+// src/pages/userPages/dashboard/Dashboard.jsx
+import { useContext } from "react";
+import { AuthContext } from "../../../context/AuthContextProvider";
+import { Box, Heading, Text, Button, HStack  } from "@chakra-ui/react";
+import { useNavigate } from "react-router";
 
 const Dashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
-    <VStack spacing={6} align="stretch">
-      <Card>
-        <CardBody>
-          <HStack spacing={4}>
-            <Avatar name={user?.username} size="lg" />
-            <VStack align="start" spacing={1}>
-              <Heading size="lg">¡Bienvenido, {user?.username}!</Heading>
-              <Text color="gray.600">{user?.email}</Text>
-              <Text fontSize="sm" color="gray.500">
-                ID: {user?.id}
-              </Text>
-            </VStack>
-          </HStack>
-        </CardBody>
-      </Card>
+    <Box p={8}>
+      <HStack justify="space-between" mb={6}>
+        <Heading as="h1" size="xl">
+          Dashboard
+        </Heading>
+        <Button colorPalette="red" variant="solid" onClick={handleLogout}>
+          Cerrar sesión
+        </Button>
+      </HStack>
 
-      <Card>
-        <CardBody>
-          <Heading size="md" mb={4}>
-            Dashboard
-          </Heading>
-          <Text>
-            Has iniciado sesión exitosamente. Aquí puedes agregar el contenido
-            principal de tu aplicación.
-          </Text>
-        </CardBody>
-      </Card>
-    </VStack>
+      {user ? (
+        <Text fontSize="lg">Bienvenido, {user.user_name} 👋</Text>
+      ) : (
+        <Text fontSize="lg">Cargando usuario...</Text>
+      )}
+    </Box>
   );
 };
 
