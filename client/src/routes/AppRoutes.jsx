@@ -5,13 +5,17 @@ import { AuthContext } from '../context/AuthContextProvider'
 import { PublicRoutes } from './PublicRoutes'
 import { PrivateRoutes } from './PrivateRoutes'
 import { UserLayout } from '../layouts/UserLayout'
-import { Spinner, Flex } from "@chakra-ui/react";
+import { Spinner, VStack, Text } from "@chakra-ui/react";
 
 // Importaciones "carga perezosa":
-const Home = lazy(()=>import('../pages/publicPages/Home'))
+const Home = lazy(()=>import('../pages/publicPages/home/Home'));
 const Register = lazy(() => import('../pages/userPages/register/Register'));
 const Login = lazy(() => import('../pages/userPages/login/Login'));
+const ForgotPassword = lazy(()=>import('../pages/publicPages/forgotPassword/ForgotPassword'));
+const ResetPassword = lazy(()=>import('../pages/publicPages/resetPassword/ResetPassword'));
+
 const Dashboard = lazy(() => import('../pages/userPages/dashboard/DashBoard'));
+
 
 
 
@@ -21,16 +25,18 @@ export const AppRoutes = () => {
   return (
     <>
       {loading ? (
-        <Flex justify="center" align="center" h="100vh">
-          <Spinner size="xl" />
-        </Flex>
+        <VStack color="brand.blue" spacing={4} pt={20} fontSize="xl">
+          <Spinner color="brand.blue" boxSize="70px" />
+          <Text fontWeight="medium">Cargando...</Text>
+        </VStack>
       ) : (
         <BrowserRouter>
           <Suspense
             fallback={
-              <div>
-                <h1>Cargando...</h1>
-              </div>
+              <VStack color="brand.blue" spacing={4} pt={20} fontSize="xl">
+                <Spinner color="brand.blue" boxSize="70px" />
+                <Text fontWeight="medium">Cargando...</Text>
+              </VStack>
             }
           >
             <Routes>
@@ -40,6 +46,8 @@ export const AppRoutes = () => {
                   <Route path="/" element={<Home />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password/:token" element={<ResetPassword />} />
                 </Route>
               </Route>
 

@@ -1,12 +1,16 @@
-import { AuthContextProvider } from './context/AuthContextProvider';
-import { AppRoutes } from './routes/AppRoutes';
+import { AuthContextProvider } from "./context/AuthContextProvider.jsx"
+import { AppRoutes } from "./routes/AppRoutes.jsx"
+// 🔥 CAMBIO: Importar desde el snippet creado por el CLI
+import { Toaster } from "./components/ui/toaster"
 
-const App = () => {
+function App() {
   return (
     <AuthContextProvider>
       <AppRoutes />
+      {/* 🔥 CAMBIO: Usar el Toaster del snippet oficial */}
+      <Toaster />
     </AuthContextProvider>
-  );
-};
+  )
+}
 
-export default App;
+export default App

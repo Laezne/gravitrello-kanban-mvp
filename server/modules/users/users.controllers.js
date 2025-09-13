@@ -1,9 +1,11 @@
 import bcrypt from "bcrypt";
 import userDal from "./users.dal.js";
+import jwt from "jsonwebtoken";
+import transporter from "../../utils/nodemailer.js";
 
 class UserController {
   // Registro
-  register = async (req, res) => {
+  register = async(req, res) => {
     try {
       const { user_name, lastname, email, password } = req.body;
 
@@ -14,7 +16,7 @@ class UserController {
         });
       }
 
-      // Verificar solo si el email ya existe
+      // Verificar si el email ya existe
       const existingUser = await userDal.getUserByEmail(email);
       if (existingUser) {
         return res.status(400).json({
@@ -26,7 +28,7 @@ class UserController {
       // Hashear contraseña
       const hashedPassword = await bcrypt.hash(password, 12);
 
-      // Crear usuario (lastname puede ser null)
+      // Crear usuario
       const user = await userDal.createUser({
         user_name,
         lastname: lastname || null,
@@ -50,40 +52,27 @@ class UserController {
       });
     } catch (error) {
       console.error("Error en registro:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error interno del servidor",
-      });
+      res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   };
 
-
   // Login
-  login = async (req, res) => {
+  login = async(req, res) => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return res.status(400).json({
-          success: false,
-          message: "Email y contraseña son requeridos",
-        });
+        return res.status(400).json({ success: false, message: "Email y contraseña son requeridos" });
       }
 
       const user = await userDal.getUserByEmail(email);
       if (!user) {
-        return res.status(401).json({
-          success: false,
-          message: "Credenciales inválidas",
-        });
+        return res.status(401).json({ success: false, message: "Credenciales inválidas" });
       }
 
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) {
-        return res.status(401).json({
-          success: false,
-          message: "Credenciales inválidas",
-        });
+        return res.status(401).json({ success: false, message: "Credenciales inválidas" });
       }
 
       req.session.userId = user.user_id;
@@ -101,10 +90,7 @@ class UserController {
       });
     } catch (error) {
       console.error("Error en login:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error interno del servidor",
-      });
+      res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   };
 
@@ -112,49 +98,111 @@ class UserController {
   logout = (req, res) => {
     req.session.destroy((err) => {
       if (err) {
-        return res.status(500).json({
-          success: false,
-          message: "Error al cerrar sesión",
-        });
+        return res.status(500).json({ success: false, message: "Error al cerrar sesión" });
       }
-
       res.clearCookie("connect.sid");
-      res.json({
-        success: true,
-        message: "Logout exitoso",
-      });
+      res.json({ success: true, message: "Logout exitoso" });
     });
   };
 
   // Perfil
-  getProfile = async (req, res) => {
+  getProfile = async(req, res) => {
     try {
       if (!req.session.userId) {
-        return res.status(401).json({
-          success: false,
-          message: "No autenticado",
-        });
+        return res.status(401).json({ success: false, message: "No autenticado" });
       }
 
       const user = await userDal.getUserById(req.session.userId);
 
       if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: "Usuario no encontrado",
-        });
+        return res.status(404).json({ success: false, message: "Usuario no encontrado" });
       }
 
-      res.json({
-        success: true,
-        user,
-      });
+      res.json({ success: true, user });
     } catch (error) {
       console.error("Error obteniendo perfil:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error interno del servidor",
+      res.status(500).json({ success: false, message: "Error interno del servidor" });
+    }
+  };
+
+  // 1. Solicitud de recuperación
+  forgotPassword = async(req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ success: false, message: "Email requerido" });
+      }
+
+      const user = await userDal.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      }
+
+      // Generar token
+      const resetToken = jwt.sign(
+        { userId: user.user_id },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_RESET_EXPIRES || "15m" }
+      );
+
+      user.reset_token = resetToken;
+      user.reset_token_expires_at = new Date(Date.now() + 15 * 60 * 1000);
+      await user.save();
+
+      // Enviar correo
+      const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+      await transporter.sendMail({
+        from: process.env.FROM_EMAIL,
+        to: user.email,
+        subject: "Recupera tu contraseña",
+        html: `
+          <p>Hola ${user.user_name},</p>
+          <p>Haz click en el siguiente enlace para restablecer tu contraseña:</p>
+          <a href="${resetUrl}" target="_blank">${resetUrl}</a>
+          <p>Este enlace expirará en 15 minutos.</p>
+        `,
       });
+
+      res.json({ success: true, message: "Correo de recuperación enviado" });
+    } catch (error) {
+      console.error("Error en forgotPassword:", error);
+      res.status(500).json({ success: false, message: "Error interno del servidor" });
+    }
+  };
+
+  // 2. Resetear contraseña
+  resetPassword = async(req, res) => {
+    try {
+      const { token } = req.params;
+      const { password } = req.body;
+
+      if (!password) {
+        return res.status(400).json({ success: false, message: "Contraseña requerida" });
+      }
+
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+      } catch (err) {
+        return res.status(400).json({ success: false, message: "Token inválido o expirado" });
+      }
+
+      const user = await userDal.getUserByResetToken(token);
+
+      if (!user || user.user_id !== decoded.userId || user.reset_token_expires_at < new Date()) {
+        return res.status(400).json({ success: false, message: "Token inválido o expirado" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 12);
+      user.password = hashedPassword;
+      user.reset_token = null;
+      user.reset_token_expires_at = null;
+      await user.save();
+
+      res.json({ success: true, message: "Contraseña actualizada con éxito" });
+    } catch (error) {
+      console.error("Error en resetPassword:", error);
+      res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   };
 }

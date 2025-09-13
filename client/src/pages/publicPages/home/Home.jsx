@@ -1,19 +1,10 @@
 import { Box, Container, Flex, Button, Card, Image } from "@chakra-ui/react";
-import logo from '../../assets/logo_unknown_gravitrello.svg'
-import imgTasks from '../../assets/img-tasks.png'
+import logo from '../../../assets/logo_unknown_gravitrello.svg'
+import imgTasks from '../../../assets/img-tasks.png'
 import { useNavigate } from "react-router";
-import { useEffect, useContext } from "react";
-import { AuthContext } from "../../context/AuthContextProvider";
 
 const Home = () => {
   const navigate = useNavigate();
-  const {user} = useContext(AuthContext);
-
-  useEffect(()=>{
-    if(user){
-      navigate('/user/dashboard');
-    }
-  }, [user]);
 
   return (
     <Container>

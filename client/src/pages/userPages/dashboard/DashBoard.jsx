@@ -19,7 +19,7 @@ const Dashboard = () => {
         <Heading as="h1" size="xl">
           Dashboard
         </Heading>
-        <Button colorPalette="red" variant="solid" onClick={handleLogout}>
+        <Button variant="brandPink" onClick={handleLogout}>
           Cerrar sesión
         </Button>
       </HStack>

@@ -7,8 +7,11 @@ import {
   Heading,
   Field,
   createToaster,
+  Link,
+  Text,
 } from "@chakra-ui/react";
 import { AuthContext } from "../../../context/AuthContextProvider";
+import { useNavigate } from "react-router";
 
 const toaster = createToaster();
 
@@ -17,6 +20,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +36,7 @@ const Login = () => {
           description: "Bienvenido de nuevo",
           type: "success",
         });
+        navigate("/dashboard"); // 🔑 redirigir al dashboard
       } else {
         setError(result.message);
         toaster.create({
@@ -64,7 +70,7 @@ const Login = () => {
       </Heading>
 
       <VStack as="form" spacing={4} onSubmit={handleSubmit}>
-        <Field.Root invalid={!!error} required>
+        <Field.Root required>
           <Field.Label>Email</Field.Label>
           <Input
             type="email"
@@ -72,10 +78,9 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          {error && <Field.ErrorText>{error}</Field.ErrorText>}
         </Field.Root>
 
-        <Field.Root invalid={!!error} required>
+        <Field.Root required>
           <Field.Label>Contraseña</Field.Label>
           <Input
             type="password"
@@ -85,9 +90,23 @@ const Login = () => {
           />
         </Field.Root>
 
+        {error && (
+          <Text color="red.500" fontSize="sm" textAlign="center">
+            {error}
+          </Text>
+        )}
+
         <Button type="submit" colorScheme="teal" width="full">
-          Ingresar
+          Aceptar
         </Button>
+
+        <Link
+          color="brand.pink"
+          fontWeight="semibold"
+          onClick={() => navigate("/forgot-password")}
+        >
+          ¿Olvidaste tu contraseña? Recupérala aquí.
+        </Link>
       </VStack>
     </Box>
   );

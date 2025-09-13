@@ -1,10 +1,25 @@
-import { useContext } from 'react';
-import { Navigate, Outlet } from 'react-router';
-import { AuthContext } from '../context/AuthContextProvider';
+import { useContext, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router";
+import { AuthContext } from "../context/AuthContextProvider";
 
 export const PublicRoutes = () => {
-  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { user, loading } = useContext(AuthContext);
 
-  // Si hay usuario -> redirige al dashboard, si no -> muestra rutas públicas
-  return user ? <Navigate to="/user/dashboard" replace /> : <Outlet />;
+  useEffect(() => {
+    if (!loading && user) {
+      // Si ya cargó y hay usuario, redirige
+      navigate("/user/dashboard", { replace: true });
+    }
+  }, [loading, user, navigate]);
+
+  if (loading) {
+    return <div>Cargando...</div>; // aquí puedes poner un Spinner
+  }
+
+  return (
+    <>
+      {!user && <Outlet />}
+    </>
+  );
 };
