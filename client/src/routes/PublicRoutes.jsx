@@ -1,25 +1,23 @@
-import { useContext, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router";
+import { useContext } from "react";
+import { Outlet } from "react-router";
 import { AuthContext } from "../context/AuthContextProvider";
+import { Spinner, Text, VStack } from "@chakra-ui/react";
 
 export const PublicRoutes = () => {
-  const navigate = useNavigate();
-  const { user, loading } = useContext(AuthContext);
-
-  useEffect(() => {
-    if (!loading && user) {
-      // Si ya cargó y hay usuario, redirige
-      navigate("/user/dashboard", { replace: true });
-    }
-  }, [loading, user, navigate]);
+  const { loading } = useContext(AuthContext);
 
   if (loading) {
-    return <div>Cargando...</div>; // aquí puedes poner un Spinner
+    return (
+      <VStack color="brand.blue" spacing={4} pt={20} fontSize="xl">
+        <Spinner color="brand.blue" boxSize="70px" />
+        <Text fontWeight="medium">Cargando...</Text>
+      </VStack>
+    )
   }
 
   return (
     <>
-      {!user && <Outlet />}
+      <Outlet />
     </>
   );
 };

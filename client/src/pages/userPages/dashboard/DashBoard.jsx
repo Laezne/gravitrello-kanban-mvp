@@ -1,17 +1,9 @@
-// src/pages/userPages/dashboard/Dashboard.jsx
 import { useContext } from "react";
 import { AuthContext } from "../../../context/AuthContextProvider";
-import { Box, Heading, Text, Button, HStack  } from "@chakra-ui/react";
-import { useNavigate } from "react-router";
+import { Box, Heading, Text, HStack  } from "@chakra-ui/react";
 
 const Dashboard = () => {
-  const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login", { replace: true });
-  };
+  const { user } = useContext(AuthContext);
 
   return (
     <Box p={8}>
@@ -19,9 +11,6 @@ const Dashboard = () => {
         <Heading as="h1" size="xl">
           Dashboard
         </Heading>
-        <Button variant="brandPink" onClick={handleLogout}>
-          Cerrar sesión
-        </Button>
       </HStack>
 
       {user ? (

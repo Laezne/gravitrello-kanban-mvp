@@ -67,12 +67,12 @@ class UserController {
 
       const user = await userDal.getUserByEmail(email);
       if (!user) {
-        return res.status(401).json({ success: false, message: "Credenciales inválidas" });
+        return res.status(401).json({ success: false, message: "Credenciales incorrectas" });
       }
 
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword) {
-        return res.status(401).json({ success: false, message: "Credenciales inválidas" });
+        return res.status(401).json({ success: false, message: "Credenciales incorrectas" });
       }
 
       req.session.userId = user.user_id;
@@ -184,13 +184,13 @@ class UserController {
       try {
         decoded = jwt.verify(token, process.env.JWT_SECRET);
       } catch (err) {
-        return res.status(400).json({ success: false, message: "Token inválido o expirado" });
+        return res.status(400).json({ success: false, message: "El token no es válido o ha expirado" });
       }
 
       const user = await userDal.getUserByResetToken(token);
 
       if (!user || user.user_id !== decoded.userId || user.reset_token_expires_at < new Date()) {
-        return res.status(400).json({ success: false, message: "Token inválido o expirado" });
+        return res.status(400).json({ success: false, message: "El token no es válido o ha expirado" });
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);

@@ -11,7 +11,10 @@ import {
   Collapsible,
   Popover,
   Image,
+  Avatar,
+  AvatarGroup
 } from '@chakra-ui/react'
+
 
 import {
   HiMenu,
@@ -22,11 +25,20 @@ import {
 
 import logo from '../../../assets/logo_unknown_gravitrello.svg'
 import { Link, useNavigate } from 'react-router'
+import { useContext } from 'react'
+import { AuthContext } from '../../../context/AuthContextProvider'
 
-const PublicNavbar = () => {
+const UserNavbar = () => {
   const { open, onToggle } = useDisclosure();
+  const { logout } = useContext(AuthContext);
 
   const navigate = useNavigate();
+
+  const onLogout = async() => {
+    await logout();
+    navigate('/login', { replace: true });
+  }
+
 
   return (
     <Box>
@@ -71,33 +83,31 @@ const PublicNavbar = () => {
           </Flex>
         </Flex>
 
-        {/* Botones SignIn/SignUp */}
+        {/* Avatar y botón logout */}
         <Stack
           flex={{ base: 1, md: 0 }}
           justify="flex-end"
           direction="row"
           spacing={6}
         >
+          <AvatarGroup>
+            <Avatar.Root 
+                size="sm" 
+                cursor="pointer"
+                onClick={() => navigate('/user/dashboard')}>
+              <Avatar.Fallback 
+                name='Lau Sánchez'/>
+              <Avatar.Image 
+                //src=''
+                alt='Ir a mi dashboard'/>
+            </Avatar.Root>
+          </AvatarGroup>
+
           <Button
-            fontSize="sm"
-            fontWeight={400}
-            variant="link"
-            color="white"
-            _hover={{ fontWeight: 'bold' }}
-            onClick={()=>navigate('/login')}
+            variant="brandPink"
+            onClick={onLogout}
           >
-            Accede
-          </Button>
-          <Button
-            display={{ base: 'none', md: 'inline-flex' }}
-            fontSize="sm"
-            fontWeight={600}
-            color="white"
-            bg="brand.pink"
-            _hover={{ bg: 'brand.pink.light' }}
-            onClick={()=>navigate('/register')}
-          >
-            Regístrate
+            Cierra Sesión
           </Button>
         </Stack>
       </Flex>
@@ -266,4 +276,4 @@ const NAV_ITEMS = [
   },
 ]
 
-export default PublicNavbar;
+export default UserNavbar;

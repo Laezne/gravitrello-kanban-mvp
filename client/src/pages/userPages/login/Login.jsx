@@ -36,7 +36,7 @@ const Login = () => {
           description: "Bienvenido de nuevo",
           type: "success",
         });
-        navigate("/dashboard"); // 🔑 redirigir al dashboard
+        navigate("/user/dashboard"); // 🔑 redirigir al dashboard
       } else {
         setError(result.message);
         toaster.create({

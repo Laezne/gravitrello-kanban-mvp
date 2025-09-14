@@ -22,7 +22,7 @@ export const AuthContextProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const register = async (userData) => {
     try {
@@ -35,7 +35,7 @@ export const AuthContextProvider = ({ children }) => {
     } catch (error) {
       return { success: false, message: error.response?.data?.message || "Error en el registro" };
     }
-  };
+  }
 
   const login = async (credentials) => {
     try {
@@ -48,14 +48,20 @@ export const AuthContextProvider = ({ children }) => {
     } catch (error) {
       return { success: false, message: error.response?.data?.message || "Error en el login" };
     }
-  };
+  }
 
   const logout = async () => {
     try {
-      await fetchData("/users/logout", "POST");
-    } catch {}
-    setUser(null);
-  };
+      await fetchData("/users/logout", "POST"); // intento avisar al servidor
+
+    } catch (error) {
+      console.error("Error al hacer logout en servidor:", error);
+
+    } finally {
+      // siempre limpio, pase lo que pase
+      setUser(null);
+    }
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, register, login, logout }}>

@@ -1,4 +1,4 @@
-// Defino un tema personalizado para usar con Chakra// src/theme/theme.js
+// Defino un tema personalizado para usar con Chakra
 import {
   defineConfig,
   createSystem,

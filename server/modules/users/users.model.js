@@ -13,16 +13,15 @@ const User = sequelize.define(
     user_name: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      // ❌ quitamos unique aquí → ya no es único
     },
     lastname: {
       type: DataTypes.STRING(100),
-      allowNull: true, // 👈 puede ser null
+      allowNull: true, 
     },
     email: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true, // 👈 el único campo único
+      unique: true, 
       validate: {
         isEmail: true,
       },
@@ -65,8 +64,8 @@ const User = sequelize.define(
     },
   },
   {
-    tableName: "user", // 👈 coincide con tu tabla en SQL
-    timestamps: false, // porque tu tabla no tiene createdAt/updatedAt
+    tableName: "user", 
+    timestamps: false, 
     freezeTableName: true,
 
     
