@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../../config/db.js";
+import sequelize from "../../config/db.js";
 
 const BoardColumn = sequelize.define(
   "BoardColumn",
@@ -86,23 +86,6 @@ const BoardColumn = sequelize.define(
     }
   }
 );
-
-// 🔗 Asociaciones
-BoardColumn.associate = (models) => {
-  // Relación: BoardColumn pertenece a Board
-  BoardColumn.belongsTo(models.Board, {
-    foreignKey: 'board_id',
-    as: 'board',
-    onDelete: 'CASCADE'
-  });
-
-  // Relación: BoardColumn tiene muchas Tasks
-  BoardColumn.hasMany(models.Task, {
-    foreignKey: 'column_id',
-    as: 'tasks',
-    onDelete: 'CASCADE'
-  });
-};
 
 // 📋 Métodos de instancia útiles
 BoardColumn.prototype.softDelete = function() {

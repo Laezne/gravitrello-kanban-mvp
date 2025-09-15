@@ -156,7 +156,7 @@ class UserController {
         to: user.email,
         subject: "Recupera tu contraseña",
         html: `
-          <p>Hola ${user.user_name},</p>
+          <p>¡Hola, ${user.user_name}!</p>
           <p>Haz click en el siguiente enlace para restablecer tu contraseña:</p>
           <a href="${resetUrl}" target="_blank">${resetUrl}</a>
           <p>Este enlace expirará en 15 minutos.</p>

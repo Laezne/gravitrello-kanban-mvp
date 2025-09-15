@@ -10,7 +10,12 @@ import cors from "cors";
 import { fileURLToPath } from "url";
 
 import sequelize from "./config/db.js";  
+
+// Importaciones de rutas:
 import userRoutes from "./modules/users/users.routes.js";
+import boardRoutes from "./modules/boards/boards.routes.js"
+import boardColumnRoutes from "./modules/boardColumns/boardColumns.routes.js";
+import taskRoutes from "./modules/tasks/tasks.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -51,6 +56,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Rutas
 app.use("/api/users", userRoutes);
+app.use("/api/boards", boardRoutes);
+app.use("/api/boards", boardColumnRoutes);
+app.use("/api/tasks", taskRoutes);
 
 // catch 404
 app.use(function (req, res, next) {
