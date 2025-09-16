@@ -36,8 +36,8 @@ const Task = sequelize.define(
       allowNull: false,
       defaultValue: 0,
       validate: {
-        min: {
-          args: 0,
+        isInt: {
+          min: 0,
           msg: "La posición debe ser mayor o igual a 0"
         }
       }

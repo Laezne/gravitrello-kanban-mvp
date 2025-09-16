@@ -143,18 +143,14 @@ const BoardView = () => {
   };
 
   const handleMoveTask = async (taskId, newColumnId) => {
-    const result = await moveTask(taskId, newColumnId);
-    
-    if (result.success) {
-      toaster.create({
-        title: "Tarea movida",
-        description: "La tarea se movió correctamente",
-        type: "success",
-      });
-    } else {
+    try {
+      await moveTask(taskId, newColumnId);
+      // No mostrar toast de éxito para drag & drop
+    } catch (error) {
+      // Solo mostrar toast si hay error
       toaster.create({
         title: "Error al mover tarea",
-        description: result.message,
+        description: "No se pudo mover la tarea",
         type: "error",
       });
     }

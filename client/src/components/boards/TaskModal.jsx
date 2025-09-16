@@ -126,7 +126,6 @@ export const TaskModal = ({
                     value={taskTitle}
                     onChange={(e) => setTaskTitle(e.target.value)}
                     maxLength={255}
-                    invalid={!!error}
                   />
                   {error && <Text color="red.500" fontSize="sm">{error}</Text>}
                   <Text fontSize="sm" color="gray.600">
@@ -150,12 +149,14 @@ export const TaskModal = ({
                 </VStack>
 
                 {isEditing && (
-                  <Checkbox
+                  <Checkbox.Root 
                     checked={taskCompleted}
-                    onCheckedChange={(e) => setTaskCompleted(e.checked)}
+                    onCheckedChange={(details) => setTaskCompleted(details.checked)}
                   >
-                    Marcar como completada
-                  </Checkbox>
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control />
+                    <Checkbox.Label>Marcar como completada</Checkbox.Label>
+                  </Checkbox.Root>
                 )}
               </VStack>
             </Dialog.Body>

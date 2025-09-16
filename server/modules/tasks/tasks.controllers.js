@@ -123,7 +123,7 @@ class TaskController {
       }
 
       const { taskId } = req.params;
-      const { task_title, task_description } = req.body;
+      const { task_title, task_description, task_is_completed } = req.body;
 
       if (!task_title) {
         return res.status(400).json({
@@ -152,7 +152,8 @@ class TaskController {
 
       const updatedTask = await taskDal.updateTask(taskId, {
         task_title: task_title.trim(),
-        task_description: task_description?.trim() || null
+        task_description: task_description?.trim() || null,
+        ...(typeof task_is_completed === 'boolean' && { task_is_completed })
       });
 
       res.json({
@@ -243,9 +244,9 @@ class TaskController {
       }
 
       const { taskId } = req.params;
-      const { newColumnId, newPosition } = req.body;
+      const { column_id } = req.body;
 
-      if (!newColumnId) {
+      if (!column_id) {
         return res.status(400).json({
           success: false,
           message: "La nueva columna es requerida"
@@ -262,7 +263,7 @@ class TaskController {
       }
 
       // Verificar que la columna destino existe
-      const targetColumn = await boardColumnDal.getActiveColumnById(newColumnId);
+      const targetColumn = await boardColumnDal.getActiveColumnById(column_id);
       if (!targetColumn) {
         return res.status(404).json({
           success: false,
@@ -287,7 +288,7 @@ class TaskController {
         });
       }
 
-      const movedTask = await taskDal.moveTaskToColumn(taskId, newColumnId, newPosition);
+      const movedTask = await taskDal.moveTaskToColumn(taskId, column_id);
 
       res.json({
         success: true,
