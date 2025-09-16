@@ -10,6 +10,7 @@ import cors from "cors";
 import { fileURLToPath } from "url";
 
 import sequelize from "./config/db.js";  
+import './config/associations.js';
 
 // Importaciones de rutas:
 import userRoutes from "./modules/users/users.routes.js";

@@ -13,10 +13,8 @@ const Register = lazy(() => import('../pages/userPages/register/Register'));
 const Login = lazy(() => import('../pages/userPages/login/Login'));
 const ForgotPassword = lazy(()=>import('../pages/publicPages/forgotPassword/ForgotPassword'));
 const ResetPassword = lazy(()=>import('../pages/publicPages/resetPassword/ResetPassword'));
-
 const Dashboard = lazy(() => import('../pages/userPages/dashboard/DashBoard'));
-
-
+const BoardView = lazy(() => import('../pages/userPages/board/BoardView'));
 
 
 export const AppRoutes = () => {
@@ -55,6 +53,7 @@ export const AppRoutes = () => {
               <Route element={<PrivateRoutes />}>
                 <Route element={<UserLayout />}>
                   <Route path="/user/dashboard" element={<Dashboard />} />
+                  <Route path="/user/board/:boardId" element={<BoardView />} /> 
                 </Route>
               </Route>
 
