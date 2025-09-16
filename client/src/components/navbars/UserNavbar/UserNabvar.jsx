@@ -30,7 +30,7 @@ import { AuthContext } from '../../../context/AuthContextProvider'
 
 const UserNavbar = () => {
   const { open, onToggle } = useDisclosure();
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -96,9 +96,9 @@ const UserNavbar = () => {
                 cursor="pointer"
                 onClick={() => navigate('/user/dashboard')}>
               <Avatar.Fallback 
-                name='Lau Sánchez'/>
+                name={user ? `${user.user_name} ${user.lastname || ''}` : 'Usuario' }/>
               <Avatar.Image 
-                //src=''
+                src={user?.avatar}
                 alt='Ir a mi dashboard'/>
             </Avatar.Root>
           </AvatarGroup>

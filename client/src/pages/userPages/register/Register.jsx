@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useNavigate } from "react-router";
 import {
   Box,
   Button,
@@ -6,14 +7,13 @@ import {
   VStack,
   Heading,
   Field,
-  createToaster,
 } from "@chakra-ui/react";
 import { AuthContext } from "../../../context/AuthContextProvider";
-
-const toaster = createToaster();
+import { toaster } from "../../../components/ui/toaster";
 
 const Register = () => {
   const { register } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [user_name, setUserName] = useState("");
   const [lastname, setLastname] = useState("");
@@ -36,9 +36,10 @@ const Register = () => {
       if (result.success) {
         toaster.create({
           title: "Registro exitoso",
-          description: "Ya puedes iniciar sesión",
+          description: `¡Bienvenido, ${user_name}!`,
           type: "success",
         });
+        navigate('/user/dashboard');
       } else {
         setError(result.message);
         toaster.create({

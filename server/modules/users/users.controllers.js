@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import transporter from "../../utils/nodemailer.js";
 
 class UserController {
-  // Registro
+// Registro con regeneración de sesión
   register = async(req, res) => {
     try {
       const { user_name, lastname, email, password } = req.body;
@@ -16,47 +16,63 @@ class UserController {
         });
       }
 
-      // Verificar si el email ya existe
-      const existingUser = await userDal.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({
-          success: false,
-          message: "El email ya está registrado",
-        });
-      }
+      // Regenerar sesión para asegurar limpieza completa
+      req.session.regenerate(async (err) => {
+        if (err) {
+          return res.status(500).json({ 
+            success: false, 
+            message: "Error de sesión" 
+          });
+        }
+        
+        try {
+          // Verificar si el email ya existe
+          const existingUser = await userDal.getUserByEmail(email);
+          if (existingUser) {
+            return res.status(400).json({
+              success: false,
+              message: "El email ya está registrado",
+            });
+          }
 
-      // Hashear contraseña
-      const hashedPassword = await bcrypt.hash(password, 12);
+          // Hashear contraseña
+          const hashedPassword = await bcrypt.hash(password, 12);
 
-      // Crear usuario
-      const user = await userDal.createUser({
-        user_name,
-        lastname: lastname || null,
-        email,
-        password: hashedPassword,
+          // Crear usuario
+          const user = await userDal.createUser({
+            user_name,
+            lastname: lastname || null,
+            email,
+            password: hashedPassword,
+          });
+
+          // Guardar en la nueva sesión limpia
+          req.session.userId = user.user_id;
+
+          res.status(201).json({
+            success: true,
+            message: "Usuario registrado exitosamente",
+            user: {
+              user_id: user.user_id,
+              user_name: user.user_name,
+              lastname: user.lastname,
+              email: user.email,
+              avatar: user.avatar,
+            },
+          });
+        } catch (innerError) {
+          console.error("Error en registro:", innerError);
+          res.status(500).json({ success: false, message: "Error interno del servidor" });
+        }
       });
 
-      // Guardar en sesión
-      req.session.userId = user.user_id;
-
-      res.status(201).json({
-        success: true,
-        message: "Usuario registrado exitosamente",
-        user: {
-          user_id: user.user_id,
-          user_name: user.user_name,
-          lastname: user.lastname,
-          email: user.email,
-          avatar: user.avatar,
-        },
-      });
     } catch (error) {
       console.error("Error en registro:", error);
       res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
   };
 
-  // Login
+// Login con regeneración de sesión si ya existe una sesión activa
   login = async(req, res) => {
     try {
       const { email, password } = req.body;
@@ -65,29 +81,50 @@ class UserController {
         return res.status(400).json({ success: false, message: "Email y contraseña son requeridos" });
       }
 
-      const user = await userDal.getUserByEmail(email);
-      if (!user) {
-        return res.status(401).json({ success: false, message: "Credenciales incorrectas" });
+      // Función para continuar con el login
+      const continueLogin = async () => {
+        try {
+          const user = await userDal.getUserByEmail(email);
+          if (!user) {
+            return res.status(401).json({ success: false, message: "Credenciales incorrectas" });
+          }
+
+          const isValidPassword = await bcrypt.compare(password, user.password);
+          if (!isValidPassword) {
+            return res.status(401).json({ success: false, message: "Credenciales incorrectas" });
+          }
+
+          req.session.userId = user.user_id;
+
+          res.json({
+            success: true,
+            message: "Login exitoso",
+            user: {
+              user_id: user.user_id,
+              user_name: user.user_name,
+              lastname: user.lastname,
+              email: user.email,
+              avatar: user.avatar,
+            },
+          });
+        } catch (innerError) {
+          console.error("Error en login:", innerError);
+          res.status(500).json({ success: false, message: "Error interno del servidor" });
+        }
+      };
+
+      // Si ya hay una sesión activa, regenerarla para evitar conflictos
+      if (req.session.userId) {
+        req.session.regenerate((err) => {
+          if (err) {
+            return res.status(500).json({ success: false, message: "Error de sesión" });
+          }
+          continueLogin();
+        });
+      } else {
+        continueLogin();
       }
 
-      const isValidPassword = await bcrypt.compare(password, user.password);
-      if (!isValidPassword) {
-        return res.status(401).json({ success: false, message: "Credenciales incorrectas" });
-      }
-
-      req.session.userId = user.user_id;
-
-      res.json({
-        success: true,
-        message: "Login exitoso",
-        user: {
-          user_id: user.user_id,
-          user_name: user.user_name,
-          lastname: user.lastname,
-          email: user.email,
-          avatar: user.avatar,
-        },
-      });
     } catch (error) {
       console.error("Error en login:", error);
       res.status(500).json({ success: false, message: "Error interno del servidor" });

@@ -5,6 +5,8 @@ import { AuthContext } from "../../../context/AuthContextProvider";
 import { useOneBoard } from "../../../hooks/useOneBoard";
 import { BoardColumn } from "../../../components/boards/BoardColumn";
 import { TaskModal } from "../../../components/boards/TaskModal";
+import { ShareBoardModal } from "../../../components/boards/ShareBoardModal";
+import { fetchData } from "../../../helpers/axiosHelper";
 import { toaster } from "../../../components/ui/toaster";
 import {
   Box,
@@ -29,6 +31,7 @@ import {
   HiShare
 } from "react-icons/hi";
 
+
 const BoardView = () => {
   const { boardId } = useParams();
   const navigate = useNavigate();
@@ -49,6 +52,9 @@ const BoardView = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
+  // Estados para compartir tablero
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
 
   // Verificar si el usuario es propietario
   const isOwner = user && board && board.created_by === user.user_id;
@@ -153,6 +159,32 @@ const BoardView = () => {
         description: "No se pudo mover la tarea",
         type: "error",
       });
+    }
+  };
+
+  // Handler para compartir tablero
+  const handleShareBoard = async (email) => {
+    setShareLoading(true);
+    try {
+      const response = await fetchData(`/boards/${boardId}/share`, "POST", { email });
+      
+      if (response.data.success) {
+        toaster.create({
+          title: "Tablero compartido",
+          description: response.data.message,
+          type: "success",
+        });
+        return { success: true };
+      } else {
+        return { success: false, message: response.data.message };
+      }
+    } catch (error) {
+      return { 
+        success: false, 
+        message: error.response?.data?.message || "Error al compartir tablero" 
+      };
+    } finally {
+      setShareLoading(false);
     }
   };
 
@@ -301,13 +333,7 @@ const BoardView = () => {
                 <MenuContent>
                   <MenuItem 
                     value="share"
-                    onClick={() => {
-                      toaster.create({
-                        title: "Próximamente",
-                        description: "La función de compartir estará disponible pronto",
-                        type: "info",
-                      });
-                    }}
+                    onClick={()=>setIsShareModalOpen(true)}
                   >
                     <HiShare /> Compartir tablero
                   </MenuItem>
@@ -362,6 +388,14 @@ const BoardView = () => {
         task={selectedTask}
         columnId={selectedColumnId}
         loading={modalLoading}
+      />
+    {/* Modal para compartir tablero */}
+      <ShareBoardModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        onShareBoard={handleShareBoard}
+        boardName={board.board_name}
+        loading={shareLoading}
       />
     </Box>
   );
