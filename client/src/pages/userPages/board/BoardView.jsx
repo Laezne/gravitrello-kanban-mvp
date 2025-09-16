@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { DragDropContext } from "@hello-pangea/dnd";
 import { AuthContext } from "../../../context/AuthContextProvider";
@@ -18,6 +18,7 @@ import {
   Spinner,
   Alert,
   Avatar,
+  AvatarGroup,
   Badge,
   IconButton,
   MenuRoot,
@@ -31,11 +32,19 @@ import {
   HiShare
 } from "react-icons/hi";
 
-
 const BoardView = () => {
   const { boardId } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+
+  // Paleta de colores para avatares
+  const colorPalette = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "teal", "cyan", "gray"];
+
+  // Función para asignar color basado en el nombre
+  const pickPalette = (name) => {
+    const index = name.charCodeAt(0) % colorPalette.length;
+    return colorPalette[index];
+  };
   
   const { 
     board, 
@@ -52,12 +61,35 @@ const BoardView = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
+  
   // Estados para compartir tablero
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareLoading, setShareLoading] = useState(false);
+  
+  // Estado para usuarios del tablero
+  const [boardUsers, setBoardUsers] = useState([]);
 
   // Verificar si el usuario es propietario
   const isOwner = user && board && board.created_by === user.user_id;
+
+  // Función para obtener usuarios del tablero
+  const fetchBoardUsers = async () => {
+    try {
+      const response = await fetchData(`/boards/${boardId}/users`, "GET");
+      if (response.data.success) {
+        setBoardUsers([response.data.data.owner, ...response.data.data.sharedUsers]);
+      }
+    } catch (error) {
+      console.error("Error obteniendo usuarios:", error);
+    }
+  };
+
+  // Cargar usuarios cuando se carga el board
+  useEffect(() => {
+    if (boardId) {
+      fetchBoardUsers();
+    }
+  }, [boardId]);
 
   // Handlers para tareas
   const handleAddTask = (columnId) => {
@@ -174,6 +206,8 @@ const BoardView = () => {
           description: response.data.message,
           type: "success",
         });
+        // Recargar usuarios del tablero después de compartir
+        fetchBoardUsers();
         return { success: true };
       } else {
         return { success: false, message: response.data.message };
@@ -293,7 +327,10 @@ const BoardView = () => {
             
             {/* Propietario */}
             <HStack spacing={2}>
-              <Avatar.Root size="sm">
+              <Avatar.Root 
+                size="sm"
+                colorPalette={pickPalette(board.creator?.user_name || "Default")}
+              >
                 <Avatar.Fallback 
                   name={`${board.creator?.user_name} ${board.creator?.lastname || ''}`}
                 />
@@ -308,6 +345,33 @@ const BoardView = () => {
                 {isOwner ? 'Tu tablero' : `Propietario: ${board.creator?.user_name}`}
               </Text>
             </HStack>
+
+            {/* Colaboradores */}
+            {boardUsers.length > 1 && (
+              <HStack spacing={2}>
+                <Text fontSize="xs" color="gray.500">
+                  Colaboradores ({boardUsers.length}):
+                </Text>
+                <AvatarGroup size="xs" max={4} gap="0" spaceX="-2">
+                  {boardUsers.map((user) => (
+                    <Avatar.Root 
+                      key={user.user_id}
+                      colorPalette={pickPalette(user.user_name || "Default")}
+                    >
+                      <Avatar.Fallback 
+                        name={`${user.user_name} ${user.lastname || ''}`}
+                      />
+                      {user.avatar && (
+                        <Avatar.Image 
+                          src={user.avatar}
+                          alt={user.user_name}
+                        />
+                      )}
+                    </Avatar.Root>
+                  ))}
+                </AvatarGroup>
+              </HStack>
+            )}
           </VStack>
 
           <HStack spacing={2}>
@@ -333,7 +397,7 @@ const BoardView = () => {
                 <MenuContent>
                   <MenuItem 
                     value="share"
-                    onClick={()=>setIsShareModalOpen(true)}
+                    onClick={() => setIsShareModalOpen(true)}
                   >
                     <HiShare /> Compartir tablero
                   </MenuItem>
@@ -389,7 +453,8 @@ const BoardView = () => {
         columnId={selectedColumnId}
         loading={modalLoading}
       />
-    {/* Modal para compartir tablero */}
+
+      {/* Modal para compartir tablero */}
       <ShareBoardModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}

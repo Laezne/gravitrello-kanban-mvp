@@ -25,7 +25,7 @@ export const BoardColumn = ({
       flex="1"
       minW="280px"
       maxW="320px"
-      bg="gray.50"
+      bg="brand.blue.light"
       borderRadius="lg"
       p={4}
     >

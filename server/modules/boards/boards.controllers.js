@@ -1,4 +1,5 @@
 import boardDal from "./boards.dal.js";
+import sequelize from "../../config/db.js";
 
 class BoardController {
   

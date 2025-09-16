@@ -45,6 +45,8 @@ const config = defineConfig({
         brand: {
           pink: { value: "#f72585", light: { value: "#f984b8" } },
           blue: { value: "#4361ee", light: { value: "#4895ef" } },
+          darkPurple: {value: "#3A0CA3", light: {value: "#9F7BEF"}},
+          violet: {value: "#7209B7", light: {value: "#C89DF7"}}
         },
       },
     },
