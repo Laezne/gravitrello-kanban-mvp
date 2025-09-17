@@ -14,6 +14,7 @@ import {
 import { HiDotsVertical, HiPencil, HiTrash, HiCheck } from "react-icons/hi";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextProvider";
+import { getAvatarColor } from "../../helpers/avatarColors.js";
 
 export const TaskCard = ({ 
   task, 
@@ -141,7 +142,11 @@ export const TaskCard = ({
               </Text>
               <HStack spacing={-2}>
                 {task.assignedUsers.slice(0, 3).map((assignedUser) => (
-                  <Avatar.Root key={assignedUser.user_id} size="xs">
+                  <Avatar.Root 
+                    key={assignedUser.user_id} 
+                    size="xs"
+                    colorPalette={getAvatarColor(assignedUser.user_name || "Default")}
+                  >
                     <Avatar.Fallback 
                       name={`${assignedUser.user_name} ${assignedUser.lastname || ''}`}
                     />
@@ -164,7 +169,10 @@ export const TaskCard = ({
           
           {/* Creador de la tarea */}
           <HStack spacing={2} w="full">
-            <Avatar.Root size="xs">
+            <Avatar.Root 
+              size="xs"
+              colorPalette={getAvatarColor(task.creator?.user_name || "Default")}
+            >
               <Avatar.Fallback 
                 name={`${task.creator?.user_name} ${task.creator?.lastname || ''}`}
               />

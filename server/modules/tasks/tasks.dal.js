@@ -88,15 +88,18 @@ class TaskDal {
 
   // ✏️ Actualizar tarea
   updateTask = async (taskId, updateData) => {
-    const [affectedRows] = await Task.update(updateData, {
-      where: { task_id: taskId }
-    });
+    const numericTaskId = parseInt(taskId);
     
-    if (affectedRows === 0) {
+    // Obtener la instancia de la tarea
+    const task = await Task.findByPk(numericTaskId);
+    if (!task) {
       throw new Error('Tarea no encontrada');
     }
     
-    return await this.getTaskById(taskId);
+    // Actualizar usando la instancia en lugar de Task.update()
+    await task.update(updateData);
+    
+    return await this.getTaskById(numericTaskId);
   };
 
   // 🗑️ Eliminar tarea

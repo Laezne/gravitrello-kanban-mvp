@@ -43,10 +43,14 @@ const config = defineConfig({
     tokens: {
       colors: {
         brand: {
-          pink: { value: "#f72585", light: { value: "#f984b8" } },
-          blue: { value: "#4361ee", light: { value: "#4895ef" } },
-          darkPurple: {value: "#3A0CA3", light: {value: "#9F7BEF"}},
-          violet: {value: "#7209B7", light: {value: "#C89DF7"}}
+          pink: { value: "#f72585" },
+          pinkLight: { value: "#f984b8" },
+          blue: { value: "#4361ee" },
+          blueLight: { value: "#C4D3FA" },
+          darkPurple: { value: "#3A0CA3" },
+          purpleLight: { value: "#9F7BEF" },
+          violet: { value: "#7209B7" },
+          violetLight: { value: "#C89DF7" }
         },
       },
     },

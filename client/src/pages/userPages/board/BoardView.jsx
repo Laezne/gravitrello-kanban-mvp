@@ -53,7 +53,8 @@ const BoardView = () => {
     createTask, 
     updateTask, 
     deleteTask, 
-    moveTask 
+    moveTask,
+    fetchBoard
   } = useOneBoard(boardId);
 
   // Estados para modales
@@ -99,6 +100,11 @@ const BoardView = () => {
   };
 
   const handleEditTask = (task) => {
+    console.log("=== DATOS DE LA TAREA A EDITAR ===");
+    console.log("Task object:", task);
+    console.log("Task ID:", task.task_id);
+    console.log("Column ID:", task.column_id);
+
     setSelectedTask(task);
     setSelectedColumnId(task.column_id);
     setIsTaskModalOpen(true);
@@ -451,6 +457,8 @@ const BoardView = () => {
         onSubmit={handleTaskSubmit}
         task={selectedTask}
         columnId={selectedColumnId}
+        boardId={boardId}
+        onRefresh={fetchBoard} 
         loading={modalLoading}
       />
 

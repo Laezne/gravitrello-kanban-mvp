@@ -16,14 +16,9 @@ import { HiDotsVertical, HiEye, HiPencil, HiTrash, HiShare } from "react-icons/h
 import { useNavigate } from "react-router";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextProvider";
+import { getAvatarColor } from "../../helpers/avatarColors.js";
 
-export const BoardCard = ({ 
-  board, 
-  onEdit, 
-  onDelete, 
-  onShare,
-  isOwner 
-}) => {
+export const BoardCard = ({ board, onEdit, onDelete, onShare }) => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
@@ -44,7 +39,7 @@ export const BoardCard = ({
         transition: "all 0.2s"
       }}
       onClick={handleViewBoard}
-      bg="white"
+      bg="brand.blueLight"
       borderWidth="1px"
       borderColor="gray.200"
     >
@@ -133,7 +128,9 @@ export const BoardCard = ({
         <VStack align="start" spacing={3}>
           {/* Información del propietario */}
           <HStack spacing={2}>
-            <Avatar.Root size="xs">
+            <Avatar.Root 
+                size="xs"
+                colorPalette={getAvatarColor(user.user_name || "Default")}>
               <Avatar.Fallback 
                 name={`${board.creator?.user_name} ${board.creator?.lastname || ''}`}
               />
@@ -148,14 +145,15 @@ export const BoardCard = ({
 
           {/* Botón de acción principal */}
           <Button
-            variant="outline"
+            variant="solid"
+            bg="gray.100"
+            color="black"
             size="sm"
             w="full"
             onClick={(e) => {
               e.stopPropagation();
               handleViewBoard();
             }}
-            colorScheme="blue"
           >
             Abrir tablero
           </Button>

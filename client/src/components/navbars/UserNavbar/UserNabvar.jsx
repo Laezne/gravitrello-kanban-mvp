@@ -13,7 +13,7 @@ import {
   Image,
   Avatar,
   AvatarGroup
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 
 
 import {
@@ -21,12 +21,13 @@ import {
   HiX,
   HiChevronDown,
   HiChevronRight,
-} from 'react-icons/hi'
+} from 'react-icons/hi';
 
-import logo from '../../../assets/logo_unknown_gravitrello.svg'
-import { Link, useNavigate } from 'react-router'
-import { useContext } from 'react'
-import { AuthContext } from '../../../context/AuthContextProvider'
+import logo from '../../../assets/logo_unknown_gravitrello.svg';
+import { Link, useNavigate } from 'react-router';
+import { useContext } from 'react';
+import { AuthContext } from '../../../context/AuthContextProvider';
+import { getAvatarColor } from '../../../helpers/avatarColors';
 
 const UserNavbar = () => {
   const { open, onToggle } = useDisclosure();
@@ -94,6 +95,7 @@ const UserNavbar = () => {
             <Avatar.Root 
                 size="sm" 
                 cursor="pointer"
+                colorPalette={getAvatarColor(user.user_name || "Default")}
                 onClick={() => navigate('/user/dashboard')}>
               <Avatar.Fallback 
                 name={user ? `${user.user_name} ${user.lastname || ''}` : 'Usuario' }/>

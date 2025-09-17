@@ -1,6 +1,7 @@
 import taskDal from "./tasks.dal.js";
 import boardDal from "../boards/boards.dal.js";
 import boardColumnDal from "../boardColumns/boardColumns.dal.js";
+import sequelize from "../../config/db.js";
 
 class TaskController {
   
@@ -30,7 +31,22 @@ class TaskController {
       }
 
       // Verificar acceso al tablero de la tarea
-      const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, task.column.board_id);
+      //const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, task.column.board_id);
+      const columnResult = await sequelize.query(
+  'SELECT board_id FROM board_column WHERE column_id = ?',
+  { replacements: [task.column_id], type: sequelize.QueryTypes.SELECT }
+);
+const boardId = columnResult[0]?.board_id;
+
+if (!boardId) {
+  return res.status(404).json({
+    success: false,
+    message: "Columna no encontrada"
+  });
+}
+
+const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardId);
+
       if (!hasAccess) {
         return res.status(403).json({
           success: false,
@@ -190,6 +206,10 @@ class TaskController {
 
       // Obtener la tarea para verificar permisos
       const task = await taskDal.getTaskById(taskId);
+      console.log("Task encontrada:", !!task);
+      console.log("Task.column exists:", !!task?.column);
+      console.log("Task.column:", task?.column);
+
       if (!task) {
         return res.status(404).json({
           success: false,

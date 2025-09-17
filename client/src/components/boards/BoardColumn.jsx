@@ -25,7 +25,7 @@ export const BoardColumn = ({
       flex="1"
       minW="280px"
       maxW="320px"
-      bg="brand.blue.light"
+      bg="brand.blueLight"
       borderRadius="lg"
       p={4}
     >
@@ -36,7 +36,7 @@ export const BoardColumn = ({
             <Text fontSize="md" fontWeight="bold" color="gray.700">
               {column.column_name}
             </Text>
-            <Badge variant="subtle" colorScheme="gray">
+            <Badge bg="brand.blue" color="white">
               {totalTasks}
             </Badge>
           </HStack>
