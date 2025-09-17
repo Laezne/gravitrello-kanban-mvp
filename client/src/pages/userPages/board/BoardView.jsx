@@ -6,8 +6,10 @@ import { useOneBoard } from "../../../hooks/useOneBoard";
 import { BoardColumn } from "../../../components/boards/BoardColumn";
 import { TaskModal } from "../../../components/boards/TaskModal";
 import { ShareBoardModal } from "../../../components/boards/ShareBoardModal";
+import { FilterModal } from "../../../components/boards/FilterModal";
 import { fetchData } from "../../../helpers/axiosHelper";
 import { toaster } from "../../../components/ui/toaster";
+import { getAvatarColor } from "../../../helpers/avatarColors";
 import {
   Box,
   Heading,
@@ -29,32 +31,24 @@ import {
 import { 
   HiArrowLeft, 
   HiDotsVertical, 
-  HiShare
+  HiShare,
+  HiFilter
 } from "react-icons/hi";
 
 const BoardView = () => {
   const { boardId } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-
-  // Paleta de colores para avatares
-  const colorPalette = ["red", "blue", "green", "yellow", "purple", "orange", "pink", "teal", "cyan", "gray"];
-
-  // Función para asignar color basado en el nombre
-  const pickPalette = (name) => {
-    const index = name.charCodeAt(0) % colorPalette.length;
-    return colorPalette[index];
-  };
   
   const { 
     board, 
     loading, 
     error, 
+    fetchBoard,
     createTask, 
     updateTask, 
     deleteTask, 
-    moveTask,
-    fetchBoard
+    moveTask 
   } = useOneBoard(boardId);
 
   // Estados para modales
@@ -70,6 +64,10 @@ const BoardView = () => {
   // Estado para usuarios del tablero
   const [boardUsers, setBoardUsers] = useState([]);
 
+  // Estados para filtros
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState('all');
+
   // Verificar si el usuario es propietario
   const isOwner = user && board && board.created_by === user.user_id;
 
@@ -83,6 +81,40 @@ const BoardView = () => {
     } catch (error) {
       console.error("Error obteniendo usuarios:", error);
     }
+  };
+
+  // Función para filtrar tareas
+  const filterTasks = (tasks) => {
+    if (!tasks) return [];
+    
+    if (currentFilter === 'all') return tasks;
+    if (currentFilter === 'completed') return tasks.filter(task => task.task_is_completed);
+    if (currentFilter === 'pending') return tasks.filter(task => !task.task_is_completed);
+    if (currentFilter.startsWith('user:')) {
+      const userId = parseInt(currentFilter.split(':')[1]);
+      return tasks.filter(task => 
+        task.assignedUsers?.some(user => user.user_id === userId)
+      );
+    }
+    return tasks;
+  };
+
+  // Función para aplicar filtros
+  const handleApplyFilter = (filter) => {
+    setCurrentFilter(filter);
+  };
+
+  // Función para obtener el nombre del filtro actual
+  const getCurrentFilterName = () => {
+    if (currentFilter === 'all') return 'Todas';
+    if (currentFilter === 'completed') return 'Completadas';
+    if (currentFilter === 'pending') return 'Pendientes';
+    if (currentFilter.startsWith('user:')) {
+      const userId = parseInt(currentFilter.split(':')[1]);
+      const user = boardUsers.find(u => u.user_id === userId);
+      return user ? user.user_name : 'Usuario';
+    }
+    return 'Filtrado';
   };
 
   // Cargar usuarios cuando se carga el board
@@ -100,11 +132,6 @@ const BoardView = () => {
   };
 
   const handleEditTask = (task) => {
-    console.log("=== DATOS DE LA TAREA A EDITAR ===");
-    console.log("Task object:", task);
-    console.log("Task ID:", task.task_id);
-    console.log("Column ID:", task.column_id);
-
     setSelectedTask(task);
     setSelectedColumnId(task.column_id);
     setIsTaskModalOpen(true);
@@ -251,9 +278,6 @@ const BoardView = () => {
     if (sourceColumnId !== destinationColumnId) {
       handleMoveTask(taskId, destinationColumnId);
     }
-    
-    // Nota: No necesitamos manejar el reordenamiento dentro de la misma columna
-    // ya que nuestro backend no tiene posiciones específicas dentro de columnas
   };
 
   // Función para volver al dashboard
@@ -329,13 +353,19 @@ const BoardView = () => {
                   Compartido
                 </Badge>
               )}
+              {/* Indicador de filtro activo */}
+              {currentFilter !== 'all' && (
+                <Badge colorScheme="green" variant="subtle">
+                  {getCurrentFilterName()}
+                </Badge>
+              )}
             </HStack>
             
             {/* Propietario */}
             <HStack spacing={2}>
               <Avatar.Root 
                 size="sm"
-                colorPalette={pickPalette(board.creator?.user_name || "Default")}
+                colorPalette={getAvatarColor(board.creator?.user_name || "Default")}
               >
                 <Avatar.Fallback 
                   name={`${board.creator?.user_name} ${board.creator?.lastname || ''}`}
@@ -362,7 +392,7 @@ const BoardView = () => {
                   {boardUsers.map((user) => (
                     <Avatar.Root 
                       key={user.user_id}
-                      colorPalette={pickPalette(user.user_name || "Default")}
+                      colorPalette={getAvatarColor(user.user_name || "Default")}
                     >
                       <Avatar.Fallback 
                         name={`${user.user_name} ${user.lastname || ''}`}
@@ -381,6 +411,16 @@ const BoardView = () => {
           </VStack>
 
           <HStack spacing={2}>
+            {/* Botón de filtros */}
+            <Button
+              variant="outline"
+              onClick={() => setIsFilterModalOpen(true)}
+              leftIcon={<HiFilter />}
+              colorScheme={currentFilter !== 'all' ? 'green' : 'gray'}
+            >
+              Filtros
+            </Button>
+
             <Button
               variant="ghost"
               onClick={handleBackToDashboard}
@@ -428,7 +468,10 @@ const BoardView = () => {
               board.columns.map((column) => (
                 <BoardColumn
                   key={column.column_id}
-                  column={column}
+                  column={{
+                    ...column,
+                    tasks: filterTasks(column.tasks) // Aplicar filtro a las tareas
+                  }}
                   onAddTask={handleAddTask}
                   onEditTask={handleEditTask}
                   onDeleteTask={handleDeleteTask}
@@ -458,8 +501,8 @@ const BoardView = () => {
         task={selectedTask}
         columnId={selectedColumnId}
         boardId={boardId}
-        onRefresh={fetchBoard} 
         loading={modalLoading}
+        onRefresh={fetchBoard}
       />
 
       {/* Modal para compartir tablero */}
@@ -469,6 +512,15 @@ const BoardView = () => {
         onShareBoard={handleShareBoard}
         boardName={board.board_name}
         loading={shareLoading}
+      />
+
+      {/* Modal para filtros */}
+      <FilterModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        onApplyFilter={handleApplyFilter}
+        boardUsers={boardUsers}
+        currentFilter={currentFilter}
       />
     </Box>
   );

@@ -10,6 +10,7 @@ import {
   MenuTrigger,
   MenuContent,
   MenuItem,
+  Box
 } from "@chakra-ui/react";
 import { HiDotsVertical, HiPencil, HiTrash, HiCheck } from "react-icons/hi";
 import { useContext } from "react";
@@ -47,9 +48,11 @@ export const TaskCard = ({
       {...dragHandleProps}
       {...props}
     >
+      
+
       <Card.Header pb={2}>
-        <HStack justify="space-between" align="start">
-          <VStack align="start" spacing={1} flex="1">
+        <HStack justify="space-between" align="start" position="relative">
+          <VStack align="start" spacing={1} flex="1" minWidth={0} pr={canEdit ? 8 : 0}>
             <Text 
               fontSize="sm" 
               fontWeight="medium" 
@@ -73,54 +76,57 @@ export const TaskCard = ({
           </VStack>
 
           {canEdit && (
-            <MenuRoot>
-              <MenuTrigger asChild>
-                <IconButton
-                  variant="ghost"
-                  size="xs"
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label="Opciones de la tarea"
-                >
-                  <HiDotsVertical />
-                </IconButton>
-              </MenuTrigger>
-              
-              <MenuContent>
-                <MenuItem 
-                  value="edit"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(task);
-                  }}
-                >
-                  <HiPencil /> Editar
-                </MenuItem>
+            <Box position="absolute" top={0} right={0} zIndex={9999}>
+              <MenuRoot>
+                <MenuTrigger asChild>
+                  <IconButton
+                    variant="ghost"
+                    size="xs"
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label="Opciones de la tarea"
+                    zIndex={10000}
+                  >
+                    <HiDotsVertical />
+                  </IconButton>
+                </MenuTrigger>
                 
-                <MenuItem 
-                  value="toggle"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleComplete(task);
-                  }}
-                >
-                  <HiCheck /> 
-                  {task.task_is_completed ? 'Marcar pendiente' : 'Marcar completada'}
-                </MenuItem>
-                
-                {isOwner && (
+                <MenuContent zIndex={10001}>
                   <MenuItem 
-                    value="delete"
+                    value="edit"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDelete(task);
+                      onEdit(task);
                     }}
-                    color="red.500"
                   >
-                    <HiTrash /> Eliminar
+                    <HiPencil /> Editar/Agisnar
                   </MenuItem>
-                )}
-              </MenuContent>
-            </MenuRoot>
+                  
+                  <MenuItem 
+                    value="toggle"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleComplete(task);
+                    }}
+                  >
+                    <HiCheck /> 
+                    {task.task_is_completed ? 'Marcar pendiente' : 'Marcar completada'}
+                  </MenuItem>
+                  
+                  {isOwner && (
+                    <MenuItem 
+                      value="delete"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(task);
+                      }}
+                      color="red.500"
+                    >
+                      <HiTrash /> Eliminar
+                    </MenuItem>
+                  )}
+                </MenuContent>
+              </MenuRoot>
+            </Box>
           )}
         </HStack>
       </Card.Header>

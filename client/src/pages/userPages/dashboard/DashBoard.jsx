@@ -211,7 +211,7 @@ const Dashboard = () => {
             </Badge>
           </HStack>
           
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} spacing={6} w="full">
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3, xl: 4 }} gap={6} w="full">
             {filteredOwnBoards.map((board) => (
               <BoardCard
                 key={board.board_id}
