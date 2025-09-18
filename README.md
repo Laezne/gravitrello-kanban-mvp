@@ -141,7 +141,7 @@ El frontend está construido con React y Vite, lo que permite recarga rápida y 
 
 - Verifica que **MySQL esté ejecutándose** correctamente.
 - Asegúrate de que las credenciales en el archivo `.env` sean correctas (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`).
-- Comprueba que la base de datos `la_simulacion` exista.
+- Comprueba que la base de datos `mvp_trello` exista.
 
 ### ❌ El frontend no se conecta al backend
 
