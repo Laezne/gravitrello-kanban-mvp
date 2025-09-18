@@ -6,13 +6,33 @@ class UserDal {
     return await User.create(userData);
   }
 
-  // Buscar por email (para login/registro/forgotPassword)
+  // Buscar por email (para login/registro/forgotPassword) - SIN password
   getUserByEmail = async(email) => {
-    return await User.findOne({ where: { email } });
+    return await User.findOne({ 
+      where: { email },
+      attributes: ["user_id", "user_name", "lastname", "email", "avatar"]
+    });
+  }
+
+  // 🔑 Buscar por email CON password y códigos 2FA (para validación de credenciales)
+  getUserByEmailWithPassword = async(email) => {
+    return await User.findOne({ 
+      where: { email },
+      attributes: [
+        "user_id", 
+        "user_name", 
+        "lastname", 
+        "email", 
+        "avatar", 
+        "password",
+        "two_factor_code",
+        "two_factor_expires_at"
+      ]
+    });
   }
 
   // Buscar por id (perfil) -> aquí ocultamos la password
-  getUserById= async(user_id) => {
+  getUserById = async(user_id) => {
     return await User.findByPk(user_id, {
       attributes: ["user_id", "user_name", "lastname", "email", "avatar"],
     });
@@ -21,6 +41,44 @@ class UserDal {
   // Buscar por reset_token
   getUserByResetToken = async(token) => {
     return await User.findOne({ where: { reset_token: token } });
+  }
+
+  // 🔑 Actualizar código 2FA
+  updateTwoFactorCode = async(user_id, code, expiresAt) => {
+    return await User.update(
+      {
+        two_factor_code: code,
+        two_factor_expires_at: expiresAt
+      },
+      {
+        where: { user_id }
+      }
+    );
+  }
+
+  // 🔑 Limpiar código 2FA después de uso exitoso
+  clearTwoFactorCode = async(user_id) => {
+    return await User.update(
+      {
+        two_factor_code: null,
+        two_factor_expires_at: null
+      },
+      {
+        where: { user_id }
+      }
+    );
+  }
+
+  // 🔑 Actualizar último login
+  updateLastLogin = async(user_id) => {
+    return await User.update(
+      {
+        last_login_at: new Date()
+      },
+      {
+        where: { user_id }
+      }
+    );
   }
 }
 
