@@ -204,9 +204,6 @@ class TaskController {
 
       // Obtener la tarea para verificar permisos
       const task = await taskDal.getTaskById(taskId);
-      console.log("Task encontrada:", !!task);
-      console.log("Task.column exists:", !!task?.column);
-      console.log("Task.column:", task?.column);
 
       if (!task) {
         return res.status(404).json({
@@ -590,13 +587,11 @@ class TaskController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // ========================================
-  // CONSULTAS Y FILTROS
-  // ========================================
+  // CONSULTAS Y FILTROS:
 
-  // 🔍 Obtener tareas asignadas a un usuario
+  // Obtener tareas asignadas a un usuario
   getTasksByUser = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -629,9 +624,9 @@ class TaskController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // 🔍 Filtrar tareas por estado en una columna
+  // Filtrar tareas por estado en una columna
   getTasksByStatus = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -676,9 +671,9 @@ class TaskController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // 🔍 Buscar tareas por título en una columna
+  // Buscar tareas por título en una columna
   searchTasks = async (req, res) => {
     try {
       if (!req.session.userId) {

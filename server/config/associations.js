@@ -1,4 +1,5 @@
-// Defino todas las relaciones entre modelos
+// Aquí se definen todas las relaciones entre modelos
+
 import User from '../modules/users/users.model.js';
 import Board from '../modules/boards/boards.model.js';
 import BoardColumn from '../modules/boardColumns/boardColumns.model.js';
@@ -78,7 +79,7 @@ Task.belongsToMany(User, {
   as: 'assignedUsers' 
 });
 
-console.log('✅ Asociaciones de modelos cargadas correctamente');
+console.log('Asociaciones de modelos cargadas correctamente');
 
 export default {
   User,

@@ -4,11 +4,9 @@ import BoardColumn from "./boardColumns.model.js";
 
 class BoardColumnDal {
   
-  // ========================================
-  // OPERACIÓN PRINCIPAL PARA DASHBOARD
-  // ========================================
+  // OPERACIÓN PRINCIPAL PARA DASHBOARD:
 
-  // 📋 Obtener columnas con sus tareas (para cargar todo el tablero)
+  // Obtener columnas con sus tareas (para cargar todo el tablero)
   getColumnsWithTasks = async (boardId) => {
     return await BoardColumn.scope('activeOrdered').findAll({
       where: { board_id: boardId },
@@ -33,30 +31,28 @@ class BoardColumnDal {
         ]
       }]
     });
-  };
+  }
 
-  // ========================================
-  // OPERACIONES BÁSICAS DE APOYO
-  // ========================================
+  // OPERACIONES BÁSICAS DE APOYO:
 
-  // 📋 Obtener todas las columnas de un tablero (sin tareas)
+  // Obtener todas las columnas de un tablero (sin tareas)
   getColumnsByBoard = async (boardId) => {
     return await BoardColumn.scope('activeOrdered').findAll({
       where: { board_id: boardId }
     });
-  };
+  }
 
-  // 📋 Obtener columna por ID
+  // Obtener columna por ID
   getColumnById = async (columnId) => {
     return await BoardColumn.findByPk(columnId);
-  };
+  }
 
-  // 📋 Obtener columna activa por ID
+  // Obtener columna activa por ID
   getActiveColumnById = async (columnId) => {
     return await BoardColumn.scope('active').findByPk(columnId);
-  };
+  }
 
-  // 🔍 Buscar columna por nombre en un tablero
+  // Buscar columna por nombre en un tablero
   findColumnByName = async (boardId, columnName) => {
     return await BoardColumn.scope('active').findOne({
       where: { 
@@ -64,13 +60,11 @@ class BoardColumnDal {
         column_name: columnName 
       }
     });
-  };
+  }
 
-  // ========================================
-  // OPERACIONES PARA CREACIÓN DE TABLEROS
-  // ========================================
+  // OPERACIONES PARA CREACIÓN DE TABLEROS:
 
-  // 📋 Crear columnas FIJAS por defecto para un tablero nuevo
+  // Crear columnas FIJAS por defecto para un tablero nuevo
   createDefaultColumns = async (boardId, transaction = null) => {
     const defaultColumns = [
       { board_id: boardId, column_name: 'User Stories', position: 1 },
@@ -81,30 +75,18 @@ class BoardColumnDal {
     ];
     
     return await BoardColumn.bulkCreate(defaultColumns, { transaction });
-  };
+  }
 
-  // ========================================
-  // ESTADÍSTICAS (OPCIONAL PARA FUTURO)
-  // ========================================
+  // ESTADÍSTICAS:
 
-  // 📊 Contar columnas activas de un tablero
-  countColumnsByBoard = async (boardId) => {
-    return await BoardColumn.count({
-      where: { 
-        board_id: boardId,
-        column_is_deleted: false 
-      }
-    });
-  };
-
-  // 📊 Contar tareas de una columna
+  // Contar tareas de una columna
   countTasksByColumn = async (columnId) => {
     return await sequelize.models.Task.count({
       where: { column_id: columnId }
     });
-  };
+  }
 
-  // 📊 Contar tareas completadas de una columna
+  // Contar tareas completadas de una columna
   countCompletedTasksByColumn = async (columnId) => {
     return await sequelize.models.Task.count({
       where: { 
@@ -112,7 +94,7 @@ class BoardColumnDal {
         task_is_completed: true
       }
     });
-  };
+  }
 }
 
 export default new BoardColumnDal();

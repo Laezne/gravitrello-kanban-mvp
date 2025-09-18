@@ -4,7 +4,7 @@ import { DataTypes } from "sequelize";
 import sequelize from "../../config/db.js";
 
 const Board = sequelize.define(
-  "Board",
+  "Board", // Nombre del modelo
   {
     board_id: {
       type: DataTypes.INTEGER.UNSIGNED,

@@ -122,11 +122,6 @@ export const TaskModal = ({
       task_is_completed: taskCompleted
     };
 
-    console.log("=== ENVIANDO DATOS ===");
-    console.log("Task ID a actualizar:", task?.task_id);
-    console.log("Es edición:", isEditing);
-    console.log("Datos:", taskData);
-
     try {
       const result = await onSubmit(taskData, task?.task_id, columnId);
       

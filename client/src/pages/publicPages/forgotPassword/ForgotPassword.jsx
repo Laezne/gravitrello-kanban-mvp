@@ -22,7 +22,7 @@ const ForgotPassword = () => {
     e.preventDefault()
     setError("")
 
-    console.log('🚀 Iniciando proceso de recuperación...')
+    console.log('Iniciando proceso de recuperación...')
 
     try {
       // Toast de loading
@@ -47,12 +47,12 @@ const ForgotPassword = () => {
       })
 
       setEmail("")
-      console.log('✅ Correo enviado exitosamente')
+      console.log('Correo enviado exitosamente')
       
     } catch (err) {
       const message = err.response?.data?.message || "Algo salió mal"
       setError(message)
-      console.error('❌ Error:', message)
+      console.error('Error:', message)
 
       // Toast de error
       toaster.create({

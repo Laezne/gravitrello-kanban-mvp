@@ -3,7 +3,7 @@ import boardDal from "../boards/boards.dal.js";
 
 class BoardColumnController {
   
-  // 📋 Obtener tablero completo (columnas con sus tareas)
+  // Obtener tablero completo (columnas con sus tareas)
   getBoardLayout = async (req, res) => {
     try {
       if (!req.session.userId) {

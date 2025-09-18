@@ -3,11 +3,9 @@ import sequelize from "../../config/db.js";
 
 class BoardController {
   
-  // ========================================
-  // OPERACIONES BÁSICAS CRUD
-  // ========================================
+  // OPERACIONES BÁSICAS CRUD:
 
-  // 📋 Obtener todos los tableros del usuario
+  // Obtener todos los tableros del usuario
   getBoards = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -32,7 +30,7 @@ class BoardController {
     }
   }
 
-  // 📋 Obtener tablero por ID
+  // Obtener tablero por ID
   getBoard = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -75,7 +73,7 @@ class BoardController {
     }
   }
 
-  // ✏️ Crear nuevo tablero
+  // Crear nuevo tablero
   createBoard = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -113,7 +111,7 @@ class BoardController {
     }
   }
 
-  // ✏️ Actualizar tablero
+  // Actualizar tablero
   updateBoard = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -166,7 +164,7 @@ class BoardController {
     }
   }
 
-  // 🗑️ Eliminar tablero
+  // Eliminar tablero
   deleteBoard = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -208,11 +206,9 @@ class BoardController {
     }
   }
 
-  // ========================================
-  // OPERACIONES DE COMPARTIR
-  // ========================================
+  // OPERACIONES DE COMPARTIR:
 
-  // 👥 Compartir tablero con usuario
+  // Compartir tablero con usuario
   shareBoard = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -272,7 +268,7 @@ class BoardController {
     }
   }
 
-  // 👥 Quitar acceso de usuario
+  // Quitar acceso de usuario
   unshareBoard = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -308,7 +304,7 @@ class BoardController {
     }
   }
 
-  // 👥 Obtener usuarios del tablero
+  // Obtener usuarios del tablero
   getBoardUsers = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -350,11 +346,9 @@ class BoardController {
     }
   }
 
-  // ========================================
-  // CONSULTAS
-  // ========================================
+  // CONSULTAS:
 
-  // 🔍 Buscar tableros
+  // Buscar tableros
   searchBoards = async (req, res) => {
     try {
       if (!req.session.userId) {

@@ -5,11 +5,9 @@ import boardColumnDal from "../boardColumns/boardColumns.dal.js"; // 🔑 Import
 
 class BoardDal {
   
-  // ========================================
-  // OPERACIONES BÁSICAS CRUD
-  // ========================================
+  // OPERACIONES BÁSICAS CRUD:
 
-  // 📋 Obtener todos los tableros de un usuario (propios + compartidos)
+  // Obtener todos los tableros de un usuario (propios + compartidos)
   getBoardsByUser = async (userId) => {
     // Tableros propios
     const ownBoards = await Board.scope('active').findAll({
@@ -61,9 +59,9 @@ class BoardDal {
         }
       ]
     });
-  };
+  }
 
-  // 📋 Obtener tablero activo por ID
+  // Obtener tablero activo por ID
   getActiveBoardById = async (boardId) => {
     return await Board.scope('active').findByPk(boardId, {
       include: [
@@ -74,9 +72,9 @@ class BoardDal {
         }
       ]
     });
-  };
+  }
 
-  // 📋 Obtener tablero completo con columnas y tareas
+  // Obtener tablero completo con columnas y tareas
   getBoardWithDetails = async (boardId) => {
     return await Board.scope('active').findByPk(boardId, {
       include: [
@@ -123,9 +121,9 @@ class BoardDal {
         }
       ]
     });
-  };
+  }
 
-  // ✏️ Crear nuevo tablero
+  // Crear nuevo tablero
   createBoard = async (boardData) => {
     const transaction = await sequelize.transaction();
     
@@ -142,9 +140,9 @@ class BoardDal {
       await transaction.rollback();
       throw error;
     }
-  };
+  }
 
-  // ✏️ Actualizar tablero
+  // Actualizar tablero
   updateBoard = async (boardId, updateData) => {
     const [affectedRows] = await Board.update(updateData, {
       where: { board_id: boardId }
@@ -155,9 +153,9 @@ class BoardDal {
     }
     
     return await this.getBoardById(boardId);
-  };
+  }
 
-  // 🗑️ Eliminar tablero (soft delete)
+  // Eliminar tablero (soft delete)
   deleteBoard = async (boardId) => {
     const board = await this.getActiveBoardById(boardId);
     if (!board) {
@@ -166,9 +164,9 @@ class BoardDal {
     
     await board.softDelete();
     return { success: true, message: 'Tablero eliminado correctamente' };
-  };
+  }
 
-  // 🗑️ Eliminar físicamente tablero
+  // Eliminar físicamente tablero
   hardDeleteBoard = async (boardId) => {
     const affectedRows = await Board.destroy({
       where: { board_id: boardId }
@@ -179,13 +177,11 @@ class BoardDal {
     }
     
     return { success: true, message: 'Tablero eliminado permanentemente' };
-  };
+  }
 
-  // ========================================
-  // OPERACIONES DE COMPARTIR TABLERO
-  // ========================================
+  // OPERACIONES DE COMPARTIR TABLERO:
 
-  // 👥 Compartir tablero con usuario
+  // Compartir tablero con usuario
   shareBoardWithUser = async (boardId, userId) => {
     try {
       // Verificar que el tablero existe
@@ -215,9 +211,9 @@ class BoardDal {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  // 👥 Quitar acceso de usuario al tablero
+  // Quitar acceso de usuario al tablero
   unshareBoardWithUser = async (boardId, userId) => {
     await sequelize.query(
       'DELETE FROM user_board WHERE user_id = ? AND board_id = ?',
@@ -225,9 +221,9 @@ class BoardDal {
     );
 
     return { success: true, message: 'Acceso removido correctamente' };
-  };
+  }
 
-  // 👥 Obtener usuarios con acceso al tablero
+  // Obtener usuarios con acceso al tablero
   getBoardUsers = async (boardId) => {
     const board = await Board.findByPk(boardId, {
       include: [
@@ -256,13 +252,11 @@ class BoardDal {
       sharedUsers: board.sharedUsers || [],
       totalUsers: 1 + (board.sharedUsers ? board.sharedUsers.length : 0)
     };
-  };
+  }
 
-  // ========================================
-  // VALIDACIONES Y PERMISOS
-  // ========================================
+  // VALIDACIONES Y PERMISOS:
 
-  // 🔒 Verificar si usuario tiene acceso al tablero
+  // Verificar si usuario tiene acceso al tablero
   userHasAccessToBoard = async (userId, boardId) => {
     const board = await Board.findByPk(boardId);
     if (!board) return false;
@@ -280,19 +274,17 @@ class BoardDal {
     );
 
     return sharedAccess.length > 0;
-  };
+  }
 
-  // 🔒 Verificar si usuario es propietario del tablero
+  // Verificar si usuario es propietario del tablero
   userOwnsBoard = async (userId, boardId) => {
     const board = await Board.findByPk(boardId);
     return board && board.created_by === userId;
-  };
+  }
 
-  // ========================================
-  // CONSULTAS Y ESTADÍSTICAS
-  // ========================================
+  // CONSULTAS:
 
-  // 📊 Contar tableros de un usuario
+  // Contar tableros de un usuario
   countBoardsByUser = async (userId) => {
     const ownBoards = await Board.count({
       where: { 
@@ -314,9 +306,9 @@ class BoardDal {
       shared: sharedBoards[0].count,
       total: ownBoards + sharedBoards[0].count
     };
-  };
+  }
 
-  // 🔍 Buscar tableros por nombre
+  // Buscar tableros por nombre
   searchBoardsByName = async (userId, searchTerm) => {
     const boards = await Board.scope('active').findAll({
       where: {
@@ -344,34 +336,9 @@ class BoardDal {
     });
 
     return boards;
-  };
+  }
 
-  // 📋 Obtener estadísticas del tablero
-  getBoardStats = async (boardId) => {
-    const stats = await sequelize.query(`
-      SELECT 
-        COUNT(DISTINCT bc.column_id) as total_columns,
-        COUNT(t.task_id) as total_tasks,
-        SUM(CASE WHEN t.task_is_completed = true THEN 1 ELSE 0 END) as completed_tasks,
-        COUNT(DISTINCT ut.user_id) as assigned_users
-      FROM board b
-      LEFT JOIN board_column bc ON b.board_id = bc.board_id AND bc.column_is_deleted = false
-      LEFT JOIN task t ON bc.column_id = t.column_id
-      LEFT JOIN user_task ut ON t.task_id = ut.task_id
-      WHERE b.board_id = ? AND b.board_is_deleted = false
-      GROUP BY b.board_id
-    `, {
-      replacements: [boardId],
-      type: sequelize.QueryTypes.SELECT
-    });
-
-    return stats[0] || { 
-      total_columns: 0, 
-      total_tasks: 0, 
-      completed_tasks: 0, 
-      assigned_users: 0 
-    };
-  };
+  
 }
 
 export default new BoardDal();

@@ -1,7 +1,6 @@
 import multer from 'multer';
-import path from 'path';
 
-// 🔑 Middleware simple solo para avatares
+// Middleware simple solo para avatares
 const storage = multer.diskStorage({
     destination: './public/images/avatars',
     filename: (req, file, callback) => {
