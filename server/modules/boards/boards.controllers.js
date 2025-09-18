@@ -30,7 +30,7 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
   // 📋 Obtener tablero por ID
   getBoard = async (req, res) => {
@@ -73,7 +73,7 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
   // ✏️ Crear nuevo tablero
   createBoard = async (req, res) => {
@@ -111,7 +111,7 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
   // ✏️ Actualizar tablero
   updateBoard = async (req, res) => {
@@ -164,7 +164,7 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
   // 🗑️ Eliminar tablero
   deleteBoard = async (req, res) => {
@@ -206,7 +206,7 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
   // ========================================
   // OPERACIONES DE COMPARTIR
@@ -270,7 +270,7 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
   // 👥 Quitar acceso de usuario
   unshareBoard = async (req, res) => {
@@ -306,7 +306,7 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
   // 👥 Obtener usuarios del tablero
   getBoardUsers = async (req, res) => {
@@ -348,10 +348,10 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
   // ========================================
-  // CONSULTAS Y ESTADÍSTICAS
+  // CONSULTAS
   // ========================================
 
   // 🔍 Buscar tableros
@@ -386,43 +386,9 @@ class BoardController {
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // 📊 Obtener estadísticas del tablero
-  getBoardStats = async (req, res) => {
-    try {
-      if (!req.session.userId) {
-        return res.status(401).json({
-          success: false,
-          message: "No autenticado"
-        });
-      }
-
-      const { boardId } = req.params;
-
-      // Verificar acceso
-      const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardId);
-      if (!hasAccess) {
-        return res.status(403).json({
-          success: false,
-          message: "No tienes permisos para ver este tablero"
-        });
-      }
-
-      const stats = await boardDal.getBoardStats(boardId);
-
-      res.json({
-        success: true,
-        data: stats
-      });
-    } catch (error) {
-      console.error("Error obteniendo estadísticas:", error);
-      res.status(500).json({
-        success: false,
-        message: "Error interno del servidor"
-      });
-    }
-  };
+  
 }
 
 export default new BoardController();

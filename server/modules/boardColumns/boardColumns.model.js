@@ -1,8 +1,10 @@
+// Definición del modelo BoardColumn - Sequelize ORM
+// Representa la entidad board_column (columna) con todos sus campos y validaciones
 import { DataTypes } from "sequelize";
 import sequelize from "../../config/db.js";
 
 const BoardColumn = sequelize.define(
-  "BoardColumn",
+  "BoardColumn", // Nombre del modelo
   {
     column_id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -87,7 +89,7 @@ const BoardColumn = sequelize.define(
   }
 );
 
-// 📋 Métodos de instancia útiles
+// Métodos de instancia útiles
 BoardColumn.prototype.softDelete = function() {
   return this.update({ column_is_deleted: true });
 };

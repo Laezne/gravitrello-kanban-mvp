@@ -4,11 +4,9 @@ import Task from "./tasks.model.js";
 
 class TaskDal {
   
-  // ========================================
-  // OPERACIONES BÁSICAS CRUD
-  // ========================================
+  // OPERACIONES BÁSICAS CRUD:
 
-  // 📋 Obtener todas las tareas de una columna
+  // Obtener todas las tareas de una columna
   getTasksByColumn = async (columnId) => {
     return await Task.scope('activeOrdered').findAll({
       where: { column_id: columnId },
@@ -24,9 +22,9 @@ class TaskDal {
         }
       ]
     });
-  };
+  }
 
-  // 📋 Obtener todas las tareas de un tablero
+  // Obtener todas las tareas de un tablero
   getTasksByBoard = async (boardId) => {
     return await Task.scope('activeOrdered').findAll({
       include: [
@@ -48,7 +46,7 @@ class TaskDal {
     });
   };
 
-  // 📋 Obtener tarea por ID
+  // Obtener tarea por ID
   getTaskById = async (taskId) => {
     return await Task.findByPk(taskId, {
       include: [
@@ -67,9 +65,9 @@ class TaskDal {
         }
       ]
     });
-  };
+  }
 
-  // ✏️ Crear nueva tarea
+  // Crear nueva tarea
   createTask = async (taskData) => {
     const nextPosition = await this.getNextPosition(taskData.column_id);
     
@@ -84,9 +82,9 @@ class TaskDal {
     }
 
     return await this.getTaskById(task.task_id);
-  };
+  }
 
-  // ✏️ Actualizar tarea
+  // Actualizar tarea
   updateTask = async (taskId, updateData) => {
     const numericTaskId = parseInt(taskId);
     
@@ -100,9 +98,9 @@ class TaskDal {
     await task.update(updateData);
     
     return await this.getTaskById(numericTaskId);
-  };
+  }
 
-  // 🗑️ Eliminar tarea
+  // Eliminar tarea
   deleteTask = async (taskId) => {
     const task = await this.getTaskById(taskId);
     if (!task) {
@@ -136,13 +134,11 @@ class TaskDal {
       await transaction.rollback();
       throw error;
     }
-  };
+  }
+  
+  // OPERACIONES DE POSICIONAMIENTO:
 
-  // ========================================
-  // OPERACIONES DE POSICIONAMIENTO
-  // ========================================
-
-  // 📊 Obtener siguiente posición disponible para una columna
+  // Obtener siguiente posición disponible para una columna
   getNextPosition = async (columnId) => {
     const maxPosition = await Task.max('position', {
       where: { column_id: columnId }
@@ -150,7 +146,7 @@ class TaskDal {
     return (maxPosition || 0) + 1;
   };
 
-  // 🔄 Mover tarea a nueva posición dentro de la misma columna
+  // Mover tarea a nueva posición dentro de la misma columna
   moveTaskToPosition = async (taskId, newPosition) => {
     const task = await this.getTaskById(taskId);
     if (!task) {
@@ -204,9 +200,9 @@ class TaskDal {
       await transaction.rollback();
       throw error;
     }
-  };
+  }
 
-  // 🔄 Mover tarea a otra columna
+  // Mover tarea a otra columna
   moveTaskToColumn = async (taskId, newColumnId, newPosition = null) => {
     const task = await this.getTaskById(taskId);
     if (!task) {
@@ -261,9 +257,9 @@ class TaskDal {
       await transaction.rollback();
       throw error;
     }
-  };
+  }
 
-  // 🔄 Reorganizar todas las posiciones de las tareas de una columna
+  // Reorganizar todas las posiciones de las tareas de una columna
   reorderPositions = async (columnId, transaction = null) => {
     const tasks = await Task.findAll({
       where: { column_id: columnId },
@@ -292,13 +288,11 @@ class TaskDal {
       }
       throw error;
     }
-  };
+  }
 
-  // ========================================
-  // OPERACIONES DE ASIGNACIÓN DE USUARIOS
-  // ========================================
+  // OPERACIONES DE ASIGNACIÓN DE USUARIOS:
 
-  // 👤 Asignar usuarios a una tarea
+  // Asignar usuarios a una tarea
   assignUsersToTask = async (taskId, userIds) => {
     const transaction = await sequelize.transaction();
     
@@ -324,9 +318,9 @@ class TaskDal {
       await transaction.rollback();
       throw error;
     }
-  };
+  }
 
-  // 👤 Agregar usuario a tarea
+  // Agregar usuario a tarea
   addUserToTask = async (taskId, userId) => {
     try {
       await sequelize.query(
@@ -337,22 +331,20 @@ class TaskDal {
     } catch (error) {
       throw error;
     }
-  };
+  }
 
-  // 👤 Remover usuario de tarea
+  // Quitar usuario de tarea
   removeUserFromTask = async (taskId, userId) => {
     await sequelize.query(
       'DELETE FROM user_task WHERE user_id = ? AND task_id = ?',
       { replacements: [userId, taskId] }
     );
     return await this.getTaskById(taskId);
-  };
+  }
 
-  // ========================================
-  // OPERACIONES DE ESTADO
-  // ========================================
+  // OPERACIONES DE ESTADO:
 
-  // ✅ Marcar tarea como completada/no completada
+  // Marcar tarea como completada/no completada
   toggleTaskComplete = async (taskId) => {
     const task = await this.getTaskById(taskId);
     if (!task) {
@@ -361,20 +353,18 @@ class TaskDal {
     
     await task.toggleComplete();
     return await this.getTaskById(taskId);
-  };
+  }
 
-  // ========================================
-  // CONSULTAS Y FILTROS
-  // ========================================
+  // CONSULTAS Y FILTROS:
 
-  // 📊 Contar tareas de una columna
+  // Contar tareas de una columna
   countTasksByColumn = async (columnId) => {
     return await Task.count({
       where: { column_id: columnId }
     });
-  };
+  }
 
-  // 📊 Contar tareas completadas de una columna
+  // Contar tareas completadas de una columna
   countCompletedTasksByColumn = async (columnId) => {
     return await Task.count({
       where: { 
@@ -384,7 +374,7 @@ class TaskDal {
     });
   };
 
-  // 🔍 Obtener tareas asignadas a un usuario
+  // Obtener tareas asignadas a un usuario
   getTasksByUser = async (userId) => {
     return await Task.findAll({
       include: [
@@ -405,9 +395,9 @@ class TaskDal {
       ],
       order: [['position', 'ASC']]
     });
-  };
+  }
 
-  // 🔍 Obtener tareas completadas/pendientes
+  // Obtener tareas completadas/pendientes
   getTasksByStatus = async (columnId, isCompleted) => {
     return await Task.scope('activeOrdered').findAll({
       where: { 
@@ -422,9 +412,9 @@ class TaskDal {
         }
       ]
     });
-  };
+  }
 
-  // 🔍 Buscar tareas por título
+  // Buscar tareas por título
   searchTasksByTitle = async (columnId, searchTerm) => {
     return await Task.scope('activeOrdered').findAll({
       where: {
@@ -439,9 +429,9 @@ class TaskDal {
         }
       ]
     });
-  };
+  }
 
-  // 📋 Obtener estadísticas de tareas por tablero
+  // Obtener estadísticas de tareas por tablero
   getTaskStatsByBoard = async (boardId) => {
     const stats = await Task.findAll({
       attributes: [
@@ -457,7 +447,7 @@ class TaskDal {
     });
     
     return stats[0] || { total: 0, completed: 0 };
-  };
+  }
 }
 
 export default new TaskDal();

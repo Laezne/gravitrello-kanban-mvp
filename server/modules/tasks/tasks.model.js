@@ -1,8 +1,11 @@
+// Definición del modelo Task - Sequelize ORM
+// Representa la entidad task (tarea) con todos sus campos y validaciones
+
 import { DataTypes } from "sequelize";
 import sequelize from "../../config/db.js";
 
 const Task = sequelize.define(
-  "Task",
+  "Task", // Nombre del modelo
   {
     task_id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -105,7 +108,7 @@ const Task = sequelize.define(
   }
 );
 
-// 🔗 Asociaciones
+// Asociaciones
 Task.associate = (models) => {
   // Relación: Task pertenece a BoardColumn
   Task.belongsTo(models.BoardColumn, {
@@ -136,7 +139,7 @@ Task.associate = (models) => {
   });
 };
 
-// 📋 Métodos de instancia útiles
+// Métodos de instancia útiles
 Task.prototype.toggleComplete = function() {
   return this.update({ task_is_completed: !this.task_is_completed });
 };

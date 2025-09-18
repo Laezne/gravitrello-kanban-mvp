@@ -5,11 +5,9 @@ import sequelize from "../../config/db.js";
 
 class TaskController {
   
-  // ========================================
-  // OPERACIONES BÁSICAS CRUD
-  // ========================================
+  // OPERACIONES BÁSICAS CRUD:
 
-  // 📋 Obtener tarea por ID
+  // Obtener tarea por ID
   getTask = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -33,19 +31,19 @@ class TaskController {
       // Verificar acceso al tablero de la tarea
       //const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, task.column.board_id);
       const columnResult = await sequelize.query(
-  'SELECT board_id FROM board_column WHERE column_id = ?',
-  { replacements: [task.column_id], type: sequelize.QueryTypes.SELECT }
-);
-const boardId = columnResult[0]?.board_id;
+        'SELECT board_id FROM board_column WHERE column_id = ?',
+        { replacements: [task.column_id], type: sequelize.QueryTypes.SELECT }
+      );
+      const boardId = columnResult[0]?.board_id;
 
-if (!boardId) {
-  return res.status(404).json({
-    success: false,
-    message: "Columna no encontrada"
-  });
-}
+      if (!boardId) {
+        return res.status(404).json({
+          success: false,
+          message: "Columna no encontrada"
+        });
+      }
 
-const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardId);
+    const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardId);
 
       if (!hasAccess) {
         return res.status(403).json({
@@ -65,9 +63,9 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // ✏️ Crear nueva tarea
+  // Crear nueva tarea
   createTask = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -126,9 +124,9 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // ✏️ Actualizar tarea
+  // Actualizar tarea
   updateTask = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -190,9 +188,9 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // 🗑️ Eliminar tarea
+  // Eliminar tarea
   deleteTask = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -247,13 +245,11 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // ========================================
-  // OPERACIONES DE DRAG & DROP
-  // ========================================
+  // OPERACIONES DE DRAG & DROP:
 
-  // 🔄 Mover tarea entre columnas (DRAG & DROP principal)
+  // Mover tarea entre columnas (DRAG & DROP principal)
   moveTaskToColumn = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -328,9 +324,9 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // 🔄 Reordenar tarea dentro de la misma columna
+  // Reordenar tarea dentro de la misma columna
   moveTaskPosition = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -388,13 +384,11 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // ========================================
-  // OPERACIONES DE ESTADO Y ASIGNACIÓN
-  // ========================================
+  // OPERACIONES DE ESTADO Y ASIGNACIÓN:
 
-  // ✅ Marcar tarea como completada/no completada
+  // Marcar tarea como completada/pendiente:
   toggleTaskComplete = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -444,9 +438,9 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // 👤 Asignar usuarios a tarea
+  // Asignar usuarios a tarea
   assignUsersToTask = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -504,9 +498,9 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // 👤 Agregar un usuario a la tarea
+  // Agregar un usuario a la tarea
   addUserToTask = async (req, res) => {
     try {
       if (!req.session.userId) {
@@ -550,9 +544,9 @@ const hasAccess = await boardDal.userHasAccessToBoard(req.session.userId, boardI
         message: "Error interno del servidor"
       });
     }
-  };
+  }
 
-  // 👤 Remover un usuario de la tarea
+  // Remover un usuario de la tarea
   removeUserFromTask = async (req, res) => {
     try {
       if (!req.session.userId) {

@@ -30,7 +30,7 @@ const User = sequelize.define(
       },
     },
     password: {
-      type: DataTypes.STRING(200), // 200 caracteres para alojar hash bcrypt
+      type: DataTypes.STRING(200), 
       allowNull: false, 
     },
     avatar: {

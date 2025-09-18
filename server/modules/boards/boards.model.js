@@ -1,3 +1,5 @@
+// Definición del modelo Board - Sequelize ORM
+// Representa la entidad board (tablero) con todos sus campos y validaciones
 import { DataTypes } from "sequelize";
 import sequelize from "../../config/db.js";
 
