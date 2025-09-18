@@ -1,3 +1,5 @@
+// Controlador para todas las operaciones relacionadas con usuarios 
+// Maneja req y res
 import bcrypt from "bcrypt";
 import userDal from "./users.dal.js";
 import jwt from "jsonwebtoken";

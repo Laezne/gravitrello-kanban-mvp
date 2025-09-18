@@ -1,26 +1,25 @@
+// Archivo de rutas para el módulo de usuarios
 import express from 'express';
 import userController from './users.controllers.js';
-import { uploadAvatar } from '../../middlewares/multerAvatar.js'; // 🔑 Importar desde middlewares
+import { uploadAvatar } from '../../middlewares/multerAvatar.js'; // Middleware para subida de avatares
 
 const router = express.Router();
 
-// Registro y perfil
-router.post('/register', uploadAvatar, userController.register);
-router.get('/me', userController.getProfile);
+// Rutas de registro y perfil
+router.post('/register', uploadAvatar, userController.register); // Registro con avatar opcional (FormData)
+router.get('/me', userController.getProfile); // Obtener datos del usuario autenticado
 
-// 🔑 Login con 2FA - nuevas rutas
-router.post('/login', userController.loginStep1); // Valida credenciales y envía código
-router.post('/login/verify', userController.loginStep2); // Verifica código 2FA
-router.post('/login/resend-code', userController.resendTwoFactorCode); // Reenvía código
+// Sistema de autenticación de dos factores (2FA)
+// Flujo dividido en pasos para mayor seguridad
+router.post('/login', userController.loginStep1); // Paso 1: Valida email/contraseña y envía código por email
+router.post('/login/verify', userController.loginStep2); // Paso 2: Verifica código de 6 dígitos y completa login
+router.post('/login/resend-code', userController.resendTwoFactorCode); // Reenvía código si expiró o no llegó
 
-// 🔑 Avatar (ya no necesario - integrado en registro)
-// router.post('/upload-avatar', uploadAvatar, userController.uploadAvatar);
+// Cierre de sesión
+router.post('/logout', userController.logout); // Destruye sesión del servidor
 
-// Logout
-router.post('/logout', userController.logout);
-
-// Recuperación de contraseña
-router.post("/forgot-password", userController.forgotPassword);
-router.post("/reset-password/:token", userController.resetPassword);
+// Sistema de recuperación de contraseña por email
+router.post("/forgot-password", userController.forgotPassword); // Envía token de recuperación por email
+router.post("/reset-password/:token", userController.resetPassword); // Valida token y actualiza contraseña
 
 export default router;
