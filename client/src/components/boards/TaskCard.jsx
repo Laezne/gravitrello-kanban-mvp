@@ -37,19 +37,22 @@ export const TaskCard = ({
       size="sm"
       bg="white"
       borderWidth="1px"
-      borderColor="gray.200"
-      _hover={{
+      borderColor={isDragging ? "blue.300" : "gray.200"}
+      boxShadow={isDragging ? "lg" : "sm"}
+      // Solo aplicar hover cuando NO se está dragging
+      _hover={!isDragging ? {
         borderColor: "blue.300",
         boxShadow: "md",
-        transition: "all 0.2s"
-      }}
-      opacity={isDragging ? 0.8 : 1}
-      transform={isDragging ? "rotate(2deg)" : "none"}
+        // Transición más rápida y específica para evitar conflictos
+        transition: "border-color 0.1s ease, box-shadow 0.1s ease"
+      } : {}}
+      // Suavizar las animaciones de drag
+      opacity={isDragging ? 0.9 : 1}
+      transform={isDragging ? "rotate(1deg) scale(1.02)" : "none"}
+      transition={isDragging ? "none" : "all 0.1s ease"}
       {...dragHandleProps}
       {...props}
     >
-      
-
       <Card.Header pb={2}>
         <HStack justify="space-between" align="start" position="relative">
           <VStack align="start" spacing={1} flex="1" minWidth={0} pr={canEdit ? 8 : 0}>
@@ -85,6 +88,8 @@ export const TaskCard = ({
                     onClick={(e) => e.stopPropagation()}
                     aria-label="Opciones de la tarea"
                     zIndex={10000}
+                    // Deshabilitar el menú durante el drag para evitar conflictos
+                    disabled={isDragging}
                   >
                     <HiDotsVertical />
                   </IconButton>
@@ -98,7 +103,7 @@ export const TaskCard = ({
                       onEdit(task);
                     }}
                   >
-                    <HiPencil /> Editar/Agisnar
+                    <HiPencil /> Editar/Asignar
                   </MenuItem>
                   
                   <MenuItem 

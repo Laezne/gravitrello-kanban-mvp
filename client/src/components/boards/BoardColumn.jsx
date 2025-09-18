@@ -22,12 +22,12 @@ export const BoardColumn = ({
 
   return (
     <Box
-      minW="280px"
-      maxW="320px"
+      w="300px"              // Ancho fijo en lugar de minW/maxW
+      flexShrink={0}         // No permitir que se comprima
       bg="brand.blueLight"
       borderRadius="lg"
       p={4}
-      h="calc(100vh - 290px)" // 🔑 Altura fija calculada
+      h="calc(100vh - 290px)"
       display="flex"
       flexDirection="column"
     >
@@ -69,13 +69,13 @@ export const BoardColumn = ({
               spacing={3} 
               w="full"
               alignItems="stretch"
-              minH="100px" // 🔑 Altura mínima para drag & drop
+              minH="100px"
               ref={provided.innerRef}
               {...provided.droppableProps}
+              // Cambio inmediato sin transición para evitar saltos
               bg={snapshot.isDraggingOver ? "blue.50" : "transparent"}
               borderRadius="md"
-              transition="background-color 0.2s"
-              pb={2} // 🔑 Padding bottom para evitar que se corte la última tarea
+              pb={2}
             >
               {column.tasks && column.tasks.length > 0 ? (
                 <>
@@ -99,18 +99,18 @@ export const BoardColumn = ({
                       )}
                     </Draggable>
                   ))}
-                  {provided.placeholder}
+                  {/* Placeholder completamente eliminado */}
                 </>
               ) : (
                 <>
                   <Box
-                    p={6}
-                    border="2px dashed"
-                    borderColor="gray.300"
+                    p={snapshot.isDraggingOver ? 3 : 6}
+                    border="none"
                     borderRadius="md"
                     textAlign="center"
                     color="gray.500"
                     fontSize="sm"
+                    bg={snapshot.isDraggingOver ? "blue.50" : "transparent"}
                   >
                     <VStack spacing={2}>
                       <Text>No hay tareas aún</Text>
@@ -119,7 +119,7 @@ export const BoardColumn = ({
                       </Text>
                     </VStack>
                   </Box>
-                  {provided.placeholder}
+                  {/* Sin Placeholder */}
                 </>
               )}
             </VStack>

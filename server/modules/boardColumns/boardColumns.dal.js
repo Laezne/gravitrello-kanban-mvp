@@ -67,11 +67,10 @@ class BoardColumnDal {
   // Crear columnas FIJAS por defecto para un tablero nuevo
   createDefaultColumns = async (boardId, transaction = null) => {
     const defaultColumns = [
-      { board_id: boardId, column_name: 'User Stories', position: 1 },
-      { board_id: boardId, column_name: 'To Do', position: 2 },
-      { board_id: boardId, column_name: 'Doing', position: 3 },
-      { board_id: boardId, column_name: 'In revision', position: 4 },
-      { board_id: boardId, column_name: 'Done', position: 5 }
+      { board_id: boardId, column_name: 'To Do', position: 1 },
+      { board_id: boardId, column_name: 'Doing', position: 2 },
+      { board_id: boardId, column_name: 'In revision', position: 3 },
+      { board_id: boardId, column_name: 'Done', position: 4 }
     ];
     
     return await BoardColumn.bulkCreate(defaultColumns, { transaction });
