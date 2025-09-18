@@ -48,7 +48,7 @@ class UserController {
 
           // 🔑 Si se subió un archivo de avatar, añadirlo
           if (req.file) {
-            userData.avatar = `/images/avatars/${req.file.filename}`;
+            userData.avatar = req.file.filename;
           }
 
           // Crear usuario

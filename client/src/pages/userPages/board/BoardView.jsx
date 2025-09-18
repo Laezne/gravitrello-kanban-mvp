@@ -322,7 +322,7 @@ const BoardView = () => {
   }
 
   return (
-    <Box p={6} maxW="7xl" mx="auto" h="calc(100vh - 60px)" overflow="hidden">
+    <Box p={6} maxW="7xl" mx="auto" h="calc(100vh - 60px)" overflow="auto">
       {/* Header del tablero */}
       <VStack align="start" spacing={4} mb={6}>
         {/* Breadcrumb */}
@@ -372,7 +372,7 @@ const BoardView = () => {
                 />
                 {board.creator?.avatar && (
                   <Avatar.Image 
-                    src={board.creator.avatar}
+                    src={`${import.meta.env.VITE_SERVER_URL_PUBLIC}/images/avatars/${board.creator.avatar}`}
                     alt={board.creator.user_name}
                   />
                 )}
@@ -399,7 +399,7 @@ const BoardView = () => {
                       />
                       {user.avatar && (
                         <Avatar.Image 
-                          src={user.avatar}
+                          src={`${import.meta.env.VITE_SERVER_URL_PUBLIC}/images/avatars/${user.avatar}`}
                           alt={user.user_name}
                         />
                       )}
@@ -456,7 +456,7 @@ const BoardView = () => {
 
       {/* Columnas del tablero */}
       <DragDropContext onDragEnd={handleOnDragEnd}>
-        <Box flex="1" overflowX="auto" overflowY="hidden">
+        <Box flex="1" overflowX="auto" overflowY="auto">
           <HStack 
             spacing={6} 
             align="start" 

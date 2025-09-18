@@ -22,59 +22,60 @@ export const BoardColumn = ({
 
   return (
     <Box
-      flex="1"
       minW="280px"
       maxW="320px"
       bg="brand.blueLight"
       borderRadius="lg"
       p={4}
+      h="calc(100vh - 290px)" // 🔑 Altura fija calculada
+      display="flex"
+      flexDirection="column"
     >
-      <VStack spacing={4} h="full">
-        {/* Header de la columna */}
-        <VStack spacing={2} w="full">
-          <HStack justify="space-between" w="full">
-            <Text fontSize="md" fontWeight="bold" color="gray.700">
-              {column.column_name}
-            </Text>
-            <Badge bg="brand.blue" color="white">
-              {totalTasks}
-            </Badge>
-          </HStack>
+      {/* Header de la columna - FIJO */}
+      <VStack spacing={2} w="full" flexShrink={0} mb={4}>
+        <HStack justify="space-between" w="full">
+          <Text fontSize="md" fontWeight="bold" color="gray.700">
+            {column.column_name}
+          </Text>
+          <Badge bg="brand.blue" color="white">
+            {totalTasks}
+          </Badge>
+        </HStack>
 
-          {/* Botón para agregar tarea */}
-          <Button
-            variant="ghost"
-            size="sm"
-            leftIcon={<HiPlus />}
-            onClick={() => onAddTask(column.column_id)}
-            w="full"
-            color="gray.600"
-            _hover={{ 
-              bg: "white", 
-              color: "blue.500",
-              borderColor: "blue.200",
-              borderWidth: "1px"
-            }}
-          >
-            Agregar tarea
-          </Button>
-        </VStack>
+        {/* Botón para agregar tarea */}
+        <Button
+          variant="ghost"
+          size="sm"
+          leftIcon={<HiPlus />}
+          onClick={() => onAddTask(column.column_id)}
+          w="full"
+          color="gray.600"
+          _hover={{ 
+            bg: "white", 
+            color: "blue.500",
+            borderColor: "blue.200",
+            borderWidth: "1px"
+          }}
+        >
+          Agregar tarea
+        </Button>
+      </VStack>
 
-        {/* Lista de tareas con Droppable */}
+      {/* Lista de tareas con Droppable - CON SCROLL */}
+      <Box flex="1" overflowY="auto" overflowX="hidden">
         <Droppable droppableId={column.column_id.toString()}>
           {(provided, snapshot) => (
             <VStack 
               spacing={3} 
-              w="full" 
-              flex="1"
+              w="full"
               alignItems="stretch"
-              overflowY="auto"
-              maxH="70vh"
+              minH="100px" // 🔑 Altura mínima para drag & drop
               ref={provided.innerRef}
               {...provided.droppableProps}
               bg={snapshot.isDraggingOver ? "blue.50" : "transparent"}
               borderRadius="md"
               transition="background-color 0.2s"
+              pb={2} // 🔑 Padding bottom para evitar que se corte la última tarea
             >
               {column.tasks && column.tasks.length > 0 ? (
                 <>
@@ -124,7 +125,7 @@ export const BoardColumn = ({
             </VStack>
           )}
         </Droppable>
-      </VStack>
+      </Box>
     </Box>
   );
 };

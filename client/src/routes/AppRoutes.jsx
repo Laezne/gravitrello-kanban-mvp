@@ -18,11 +18,11 @@ const BoardView = lazy(() => import('../pages/userPages/board/BoardView'));
 
 
 export const AppRoutes = () => {
-  const { user, loading } = useContext(AuthContext)
+  const { user, isLoading } = useContext(AuthContext);
 
   return (
     <>
-      {loading ? (
+      {isLoading ? (
         <VStack color="brand.blue" spacing={4} pt={20} fontSize="xl">
           <Spinner color="brand.blue" boxSize="70px" />
           <Text fontWeight="medium">Cargando...</Text>

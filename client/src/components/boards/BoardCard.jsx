@@ -130,12 +130,15 @@ export const BoardCard = ({ board, onEdit, onDelete, onShare }) => {
           <HStack spacing={2}>
             <Avatar.Root 
                 size="xs"
-                colorPalette={getAvatarColor(user.user_name || "Default")}>
+                colorPalette={getAvatarColor(board.creator?.user_name || "Default")}>
               <Avatar.Fallback 
                 name={`${board.creator?.user_name} ${board.creator?.lastname || ''}`}
               />
               {board.creator?.avatar && (
-                <Avatar.Image src={board.creator.avatar} />
+                <Avatar.Image 
+                  src={`${import.meta.env.VITE_SERVER_URL_PUBLIC}/images/avatars/${board.creator.avatar}`}
+                  alt={board.creator.user_name}
+                />
               )}
             </Avatar.Root>
             <Text fontSize="sm" color="gray.600">

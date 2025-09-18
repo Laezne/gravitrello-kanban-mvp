@@ -258,7 +258,7 @@ export const TaskModal = ({
                                     />
                                     {user.avatar && (
                                       <Avatar.Image 
-                                        src={user.avatar}
+                                        src={`${import.meta.env.VITE_SERVER_URL_PUBLIC}/images/avatars/${user.avatar}`}
                                         alt={user.user_name}
                                       />
                                     )}

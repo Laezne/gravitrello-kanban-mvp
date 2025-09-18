@@ -4,22 +4,20 @@ import { AuthContext } from "../context/AuthContextProvider";
 
 export const PrivateRoutes = () => {
   const navigate = useNavigate();
-  const { user, loading } = useContext(AuthContext);
+  const { user, isLoading } = useContext(AuthContext);
 
+  // 🔒 Solo redirigir si ya terminó la comprobación y no hay user
   useEffect(() => {
-    if (!loading && !user) {
-      // Si ya cargó y no hay usuario, redirige
+    if (!isLoading && !user) {
       navigate("/login", { replace: true });
     }
-  }, [loading, user, navigate]);
+  }, [isLoading, user, navigate]);
 
-  if (loading) {
-    return <div>Cargando...</div>; // aquí puedes poner un Spinner
+  // Mientras carga la sesión, no renderizamos nada (AppRoutes ya muestra spinner)
+  if (isLoading) {
+    return null;
   }
 
-  return (
-    <>
-      {user && <Outlet />}
-    </>
-  );
+  // Si hay user, dejamos pasar a las rutas privadas
+  return user ? <Outlet /> : null;
 };

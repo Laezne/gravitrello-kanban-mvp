@@ -158,7 +158,7 @@ export const TaskCard = ({
                     />
                     {assignedUser.avatar && (
                       <Avatar.Image 
-                        src={assignedUser.avatar}
+                        src={`${import.meta.env.VITE_SERVER_URL_PUBLIC}/images/avatars/${assignedUser.avatar}`}
                         alt={assignedUser.user_name}
                       />
                     )}
@@ -184,7 +184,7 @@ export const TaskCard = ({
               />
               {task.creator?.avatar && (
                 <Avatar.Image 
-                  src={task.creator.avatar}
+                  src={`${import.meta.env.VITE_SERVER_URL_PUBLIC}/images/avatars/${task.creator.avatar}`}
                   alt={task.creator.user_name}
                 />
               )}

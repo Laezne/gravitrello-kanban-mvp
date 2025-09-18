@@ -100,7 +100,7 @@ const UserNavbar = () => {
               <Avatar.Fallback 
                 name={user ? `${user.user_name} ${user.lastname || ''}` : 'Usuario' }/>
               <Avatar.Image 
-                src={user?.avatar}
+                src={user?.avatar ? `${import.meta.env.VITE_SERVER_URL_PUBLIC}/images/avatars/${user.avatar}` : null}
                 alt='Ir a mi dashboard'/>
             </Avatar.Root>
           </AvatarGroup>

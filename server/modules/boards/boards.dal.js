@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import sequelize from "../../config/db.js";
 import Board from "./boards.model.js";
+import boardColumnDal from "../boardColumns/boardColumns.dal.js"; // 🔑 Importar DAL de columnas
 
 class BoardDal {
   
@@ -132,14 +133,8 @@ class BoardDal {
       // Crear el tablero
       const board = await Board.create(boardData, { transaction });
       
-      // Crear columnas por defecto
-      const defaultColumns = [
-        { board_id: board.board_id, column_name: 'To Do', position: 1 },
-        { board_id: board.board_id, column_name: 'Doing', position: 2 },
-        { board_id: board.board_id, column_name: 'Done', position: 3 }
-      ];
-      
-      await sequelize.models.BoardColumn.bulkCreate(defaultColumns, { transaction });
+      // 🔑 Usar boardColumnDal para crear las 5 columnas por defecto
+      await boardColumnDal.createDefaultColumns(board.board_id, transaction);
       
       await transaction.commit();
       return await this.getBoardById(board.board_id);

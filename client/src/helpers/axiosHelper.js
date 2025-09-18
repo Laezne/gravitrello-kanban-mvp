@@ -10,6 +10,12 @@ export const fetchData = async (url, method, data = null, token = null) => {
     headers = { Authorization: `Bearer ${token}` };
   }
 
+  // 🔑 Si es FormData, no establecer Content-Type (axios lo hará automáticamente)
+  // Si es JSON, establecer Content-Type
+  if (data && !(data instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   const config = {
     method,
     url: apiUrl + url,
