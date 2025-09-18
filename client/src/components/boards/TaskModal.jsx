@@ -177,9 +177,9 @@ export const TaskModal = ({
       size="md"
     >
       <Portal>
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
+        <Dialog.Backdrop zIndex={50000} />
+        <Dialog.Positioner zIndex={50001}>
+          <Dialog.Content zIndex={50002}>
             <Dialog.Header>
               <Dialog.Title>
                 {isEditing ? "Editar tarea" : "Crear nueva tarea"}

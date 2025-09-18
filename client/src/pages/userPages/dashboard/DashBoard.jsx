@@ -126,15 +126,6 @@ const Dashboard = () => {
     }
   };
 
-  // Handler para compartir tablero (placeholder)
-  const handleShareBoard = (board) => {
-    toaster.create({
-      title: "Próximamente",
-      description: "La función de compartir estará disponible pronto",
-      type: "info",
-    });
-  };
-
   if (loading) {
     return (
       <VStack color="brand.blue" spacing={4} pt={20} fontSize="xl">
@@ -218,7 +209,6 @@ const Dashboard = () => {
                 board={board}
                 onEdit={handleEditBoard}
                 onDelete={handleDeleteBoard}
-                onShare={handleShareBoard}
                 isOwner={true}
               />
             ))}
@@ -245,7 +235,6 @@ const Dashboard = () => {
                 board={board}
                 onEdit={handleEditBoard}
                 onDelete={handleDeleteBoard}
-                onShare={handleShareBoard}
                 isOwner={false}
               />
             ))}

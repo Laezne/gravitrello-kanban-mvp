@@ -12,13 +12,13 @@ import {
   MenuItem,
   Button,
 } from "@chakra-ui/react";
-import { HiDotsVertical, HiEye, HiPencil, HiTrash, HiShare } from "react-icons/hi";
+import { HiDotsVertical, HiEye, HiPencil, HiTrash } from "react-icons/hi";
 import { useNavigate } from "react-router";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContextProvider";
 import { getAvatarColor } from "../../helpers/avatarColors.js";
 
-export const BoardCard = ({ board, onEdit, onDelete, onShare }) => {
+export const BoardCard = ({ board, onEdit, onDelete }) => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
@@ -95,16 +95,6 @@ export const BoardCard = ({ board, onEdit, onDelete, onShare }) => {
                     }}
                   >
                     <HiPencil /> Editar nombre
-                  </MenuItem>
-                  
-                  <MenuItem 
-                    value="share"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onShare(board);
-                    }}
-                  >
-                    <HiShare /> Compartir
                   </MenuItem>
                   
                   <MenuItem 
