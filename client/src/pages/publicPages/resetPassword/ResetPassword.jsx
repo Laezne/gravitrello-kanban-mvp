@@ -15,9 +15,11 @@ import { fetchData } from "../../../helpers/axiosHelper";
 const toaster = createToaster();
 
 const ResetPassword = () => {
+  // Obtener token de la URL y hook de navegación
   const { token } = useParams();
   const navigate = useNavigate();
 
+  // Estados del formulario
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,6 +28,7 @@ const ResetPassword = () => {
     e.preventDefault();
     setError("");
 
+    // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
       setError("Las contraseñas no coinciden");
       toaster.create({
@@ -37,8 +40,9 @@ const ResetPassword = () => {
     }
 
     try {
+      // Enviar nueva contraseña al servidor
       const res = await fetchData(
-        `/users/reset-password/${token}`, // ✅ dinámico
+        `/users/reset-password/${token}`, // dinámico
         "POST",
         { password }
       );
@@ -51,6 +55,7 @@ const ResetPassword = () => {
 
       navigate("/login");
     } catch (err) {
+      // Manejar errores
       const message = err.response?.data?.message || "Algo salió mal";
       setError(message);
       toaster.create({

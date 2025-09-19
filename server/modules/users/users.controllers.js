@@ -82,7 +82,7 @@ class UserController {
     }
   };
 
-  // 🔑 PASO 1: Login inicial - valida credenciales y envía código 2FA
+  // PASO 1: Login inicial - valida credenciales y envía código 2FA
   loginStep1 = async(req, res) => {
     try {
       const { email, password } = req.body;
@@ -113,7 +113,7 @@ class UserController {
             });
           }
 
-          // ✅ Credenciales válidas - generar código 2FA
+          // Credenciales válidas - generar código 2FA
           const twoFactorCode = this.generateTwoFactorCode();
           const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutos
 
@@ -164,9 +164,9 @@ class UserController {
         message: "Error interno del servidor" 
       });
     }
-  };
+  }
 
-  // 🔑 PASO 2: Verificar código 2FA y completar login
+  // PASO 2: Verificar código 2FA y completar login
   loginStep2 = async(req, res) => {
     try {
       const { code } = req.body;
@@ -205,7 +205,7 @@ class UserController {
         });
       }
 
-      // ✅ Código válido - completar login
+      // Código válido - completar login
       // Limpiar código 2FA
       await userDal.clearTwoFactorCode(user.user_id);
       
@@ -237,7 +237,7 @@ class UserController {
     }
   };
 
-  // 🔑 Reenviar código 2FA
+  // Reenviar código 2FA
   resendTwoFactorCode = async(req, res) => {
     try {
       if (!req.session.tempUserId) {
@@ -279,12 +279,12 @@ class UserController {
     }
   };
 
-  // 🔑 Generar código aleatorio de 6 dígitos
+  // Generar código aleatorio de 6 dígitos
   generateTwoFactorCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
-  // 🔑 Enviar email con código 2FA
+  // Enviar email con código 2FA
   sendTwoFactorEmail = async(email, userName, code) => {
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -314,12 +314,6 @@ class UserController {
       subject: "🔐 Tu código de verificación",
       html: htmlContent,
     });
-  };
-
-  // Login original (mantener por compatibilidad - opcional)
-  login = async(req, res) => {
-    // Redirigir al nuevo flujo 2FA
-    return this.loginStep1(req, res);
   };
 
   // Logout
