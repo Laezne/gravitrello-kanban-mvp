@@ -12,6 +12,7 @@ Sistema web de gestión de proyectos (tableros, tareas, usuarios), basado en kan
 - Compartir tablero de tareas con otros usuarios
 - Asignar tareas a otros usuarios del tablero
 - Filtros de tareas (por usuario asignado, completadas/pendientes, etc.)
+- Y otros extras o detalles como: spinner, toast, favicon...
 
 ---
 
